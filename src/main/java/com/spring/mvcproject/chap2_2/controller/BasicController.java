@@ -9,9 +9,9 @@ public class BasicController {
 
     // curl.exe -X GET "http://localhost:9000/chap2-2/hello"
     //GET요청 (URL호출은 무조건 GET요청)
-//    @RequestMapping(
-//            value = "/chap2-2/hello"
-//            , method = RequestMethod.POST)
+    @RequestMapping(
+            value = "/chap2-2/hello"
+            , method = RequestMethod.POST)
     @GetMapping("/chap2-2/hello")
 //    @PostMapping("/chap2-2/hello")
     @ResponseBody
