@@ -43,7 +43,7 @@ public class GreetingController2_3 {
     @GetMapping("/search")
     public String search(
             @RequestParam("query") String query
-            , @RequestParam(value = "page", defaultValue = "1") int page
+            , @RequestParam(required = false, defaultValue = "1") int page
     ) {
         return "Query: " + query + ", Page: " + page;
     }
