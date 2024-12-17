@@ -30,7 +30,7 @@ public class GreetingController2_3 {
 
     // ================ Q3
 
-    @GetMapping("/books")
+    @GetMapping("/books2_3")
     public String getBooks(
             @RequestParam("author") String author
             , @RequestParam("genre") String genre
