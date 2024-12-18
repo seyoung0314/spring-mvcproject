@@ -87,8 +87,7 @@ public class BoardApiController {
     public String postListData(
             @RequestBody Board board
     ){
-        String textOnly = board.getContent().replaceAll("<[^>]*>", "");
-        System.out.println("textOnly = " + textOnly);
+//        String textOnly = board.getContent().replaceAll("<[^>]*>", "");
         System.out.println("board = " + board);
 
         board.setId(idx++);

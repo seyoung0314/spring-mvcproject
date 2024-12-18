@@ -241,9 +241,13 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         const formData = new FormData($form);
 
         const item = Object.fromEntries(formData.entries());
-        // console.log('item');
-        // console.log(item);
-        // console.log(today);
+
+        // 게시판 라이브러리가 p태그 포함해서 줘서 제거하고 서버로 보냄
+        const content = formData.get('content').replace(/<[^>]*>/g, "");
+        item.content = content;
+
+        console.log('item');
+        console.log(item);
 
         postDataItem(item);
       });

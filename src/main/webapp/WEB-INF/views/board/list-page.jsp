@@ -195,6 +195,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       async function getListData(item) {
         let url = API_URL;
+
+        // 아이템(검색옵션)이 있으면 검색옵션 추가
         if (item) {
           url += `?searchOption=\${item.type}&keyword=\${item.keyword}`;
           console.log(url);
@@ -204,7 +206,11 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
         console.log(data);
 
-        rendData(data);
+        if (res.status === 200) {
+          rendData(data);
+        } else {
+          alert("error");
+        }
       }
 
       async function delListItem(id) {
@@ -276,11 +282,16 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       //================= 조회수 스크립트 =================//
       $cardContainer.addEventListener("click", (e) => {
-        const selectedItemId = e.target
+        e.preventDefault();
+
+        if (e.target.matches(".card-container *")){
+
+          const selectedItemId = e.target
           .closest(".card-wrapper")
           .querySelector(".card").dataset.bno;
-
+          
           countListItem(selectedItemId);
+        }
       });
 
       //================= 검색버튼 스크립트 =================//
