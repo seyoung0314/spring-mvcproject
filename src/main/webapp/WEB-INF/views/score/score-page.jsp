@@ -84,13 +84,13 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     <div class="wrap">
       <section class="score">
         <h1>시험 점수 등록</h1>
-        <form id="addForm" method="post"> 
+        <form id="addForm" method="post">
           <label> # 이름: <input type="text" name="name" /> </label>
           <label> # 국어: <input type="text" name="kor" /> </label>
           <label> # 영어: <input type="text" name="eng" /> </label>
           <label> # 수학: <input type="text" name="math" /> </label>
           <label>
-            <button id ="submit"type="submit">확인</button>
+            <button id="createBtn" type="submit">확인</button>
             <button id="go-home" type="button">홈화면으로</button>
           </label>
         </form>
@@ -117,10 +117,14 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
     <script>
       const API_URL = "/api/v1/scores";
+
       const $scores = document.getElementById("scores");
       const $count = document.getElementById("count");
+
       const $sortBtn = document.querySelector(".sort-link-group");
-      const $submitBtn = document.getElementById('submit');
+      const $submitBtn = document.getElementById("submit");
+
+      const $form = document.getElementById("addForm");
 
       //화면에 성적 목록을 랜더링하는 함수
       function renderScoreList(data) {
@@ -129,7 +133,7 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
         data.forEach(({ id, name, kor, eng, math }) => {
           $scores.innerHTML += `
-            <li>
+            <li data-score-id="\${id}">
               # 이름 : \${name}, 국어: \${kor}점, 
               영어: \${eng}점, 수학: \${math}점
               <a href='#' class='del-btn'>삭제
@@ -148,18 +152,80 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         renderScoreList(data);
       }
 
+      // 서버로 성정 등록 post요청을 전송하는 함수
+      async function fetchPostScore(scoreObj) {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(scoreObj),
+        });
+
+        if (res.status === 200) {
+          fetchGetScores();
+          $form.reset();
+        } else {
+          alert("error");
+        }
+      }
+
+      async function fetchDeleteScore(id) {
+        const res = await fetch(API_URL + `/\${id}`, {
+          method: "DELETE",
+        });
+
+        if (res.status === 200) {
+          fetchGetScores();
+        } else {
+          alert("error");
+        }
+      }
+
       // const data = await fetch(API_URL)
       //실행코드
       fetchGetScores();
-
 
       $sortBtn.addEventListener("click", (e) => {
         console.log(e.target);
         fetchGetScores(e.target.id);
       });
 
-      $form = document.getElementById('addForm');
-      $form.addEventListener("submit", (e) => {
+      $creatBtn = document.getElementById("createBtn");
+      $creatBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const formData = new FormData($form);
+
+        // const name = formData.get('name');
+        // const kor = formData.get('kor');
+        // const eng = formData.get('eng');
+        // const math = formData.get('math');
+
+        // const scoreObj = {
+        //   name: name,
+        //   kor: kor,
+        //   math: math,
+        //   eng: eng,
+        // };
+
+        const scoreObj = Object.fromEntries(formData.entries());
+
+        console.log(scoreObj);
+
+        // 서버로 post요청 전송
+        fetchPostScore(scoreObj);
+      });
+
+      $scores.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        if (!e.target.matches(".del-btn")) return;
+
+        // 서버에 삭제요청 전송
+        // 클릭한 요소가 가진 서버 id를 읽어내야 함
+
+        const id = e.target.closest("li").dataset.scoreId;
+        fetchDeleteScore(id);
+
         console.log(e.target);
       });
 
