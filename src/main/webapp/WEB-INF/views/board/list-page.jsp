@@ -123,7 +123,7 @@
 
         <div class="card-container">
 
-              <div class="card-wrapper">
+              <!-- <div class="card-wrapper">
                 <section class="card" data-bno="1">
                   <div class="card-title-wrapper">
                     <h2 class="card-title">하하호호</h2>
@@ -144,16 +144,17 @@
                   <div class="card-content">
                     가나다라마바사
                   </div>
-                </section>
+                </section> -->
+
 
                 <!-- 관리자이거나 본인이 쓴글에만 렌더링되도록 -->
-                <div class="card-btn-group">
+                <!-- <div class="card-btn-group">
                   <button class="del-btn">
                     <i class="fas fa-times"></i>
                   </button>
                 </div>
 
-              </div>
+              </div> -->
               <!-- end div.card-wrapper -->
 
 
@@ -193,6 +194,61 @@
       <script>
 
         const $cardContainer = document.querySelector('.card-container');
+
+        const API_URL = "/api/v1/boards"
+
+        async function getListData() {
+          const res = await fetch(API_URL);
+          const data = await res.json();
+          
+          console.log(data);
+         
+          rendData(data);
+        }
+
+        getListData();
+
+        function rendData(data){
+          data.forEach(element => {
+            const now = element.regDateTime.split('T')[0];
+
+            
+            $cardContainer.innerHTML +=
+            `              
+            <div class="card-wrapper">
+            <section class="card" data-bno="\${element.id}">
+                  <div class="card-title-wrapper">
+                    <h2 class="card-title">\${element.title}</h2>
+                    <div class="time-view-wrapper">
+                      <div class="time">
+                        <i class="far fa-clock"></i>
+                        \${now}
+                      </div>
+
+                      <div class="view">
+                        <i class="fas fa-eye"></i>
+                        <span class="view-count">0</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-content">
+                    \${element.content}
+                  </div>
+                </section>
+                </div>
+
+                <div class="card-btn-group">
+                  <button class="del-btn">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+`
+          });
+      
+        }
+
+
+
 
         //================= 삭제버튼 스크립트 =================//
         const modal = document.getElementById('modal'); // 모달창 얻기
