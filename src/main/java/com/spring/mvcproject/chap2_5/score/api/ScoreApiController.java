@@ -29,6 +29,15 @@ public class ScoreApiController {
     public List<Score> scoreList(
             @RequestParam(required = false, defaultValue = "") String sort
     ) {
+
+        List<Score> result = new ArrayList<>(scoreStore.values())
+                .stream()
+                .sorted(getScoreComparator(sort))
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    private static Comparator<Score> getScoreComparator(String sort) {
         Comparator<Score> comparing = Comparator.comparing(Score::getId);
 
         switch (sort) {
@@ -39,32 +48,38 @@ public class ScoreApiController {
                 comparing = Comparator.comparing(Score::getName);
                 break;
             case "average":
-                comparing = Comparator.comparingDouble((Score score)->
-                    (double) (score.getEng() + score.getKor() + score.getMath()) / 3 ).reversed();
+                comparing = Comparator.comparingDouble((Score score) ->
+                        (double) (score.getEng() + score.getKor() + score.getMath()) / 3).reversed();
                 break;
             default:
                 break;
         }
-
-        List<Score> result = new ArrayList<>(scoreStore.values())
-                .stream()
-                .sorted(comparing)
-                .collect(Collectors.toList());
-        return result;
+        return comparing;
     }
 
     //http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
     // 학생 추가
     @PostMapping
     public String addStudent(
-        String name,
-        int kor,
-        int eng,
-        int math
-    ){
-        Score newStudent = new Score(nextId++, name, kor, eng, math);
-        scoreStore.put(newStudent.getId(), newStudent);
+            @RequestBody Score score
+//        String name,
+//        int kor,
+//        int eng,
+//        int math
+    ) {
+        score.setId(nextId++);
+//        Score newStudent = new Score(nextId++, name, kor, eng, math);
+        scoreStore.put(score.getId(), score);
         return "";
+    }
+
+    //성정 정보 삭제요청 처리
+    @DeleteMapping("/{id}")
+    public String deleteScore(
+            @PathVariable Long id
+    ) {
+        scoreStore.remove(id);
+        return id + "삭제 성공";
     }
 
 }
