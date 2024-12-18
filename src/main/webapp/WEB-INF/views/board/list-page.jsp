@@ -1,129 +1,133 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-  <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-    <!DOCTYPE html>
-    <html>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF-8" %> <%@ taglib prefix="c"
+uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>스프링 연습프로젝트 사이트</title>
 
-    <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Single+Day&display=swap"
+      rel="stylesheet"
+    />
 
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>스프링 연습프로젝트 사이트</title>
+    <!-- reset -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css"
+    />
 
+    <!-- fontawesome css: https://fontawesome.com -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+    />
 
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Single+Day&display=swap" rel="stylesheet">
+    <!-- https://linearicons.com/free#cdn -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css"
+    />
 
-      <!-- reset -->
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css">
+    <!-- bootstrap css -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-      <!-- fontawesome css: https://fontawesome.com -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css" />
 
-      <!-- https://linearicons.com/free#cdn -->
-      <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+    <!-- bootstrap js -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      defer
+    ></script>
 
-      <!-- bootstrap css -->
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- side menu event js -->
+    <script src="/assets/js/side-menu.js" defer></script>
 
+    <link rel="stylesheet" href="/assets/css/list.css" />
 
-      <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+      .card-container .card .card-title-wrapper .time-view-wrapper > div.hit {
+        background: yellow;
+      }
+    </style>
+  </head>
 
-      <!-- bootstrap js -->
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" defer></script>
-
-      <!-- side menu event js -->
-      <script src="/assets/js/side-menu.js" defer></script>
-
-      <link rel="stylesheet" href="/assets/css/list.css">
-
-      <style>
-        .card-container .card .card-title-wrapper .time-view-wrapper>div.hit {
-          background: yellow;
-        }
-      </style>
-
-    </head>
-
-    <body>
-
-      <!-- header -->
-      <header>
-        <div class="inner-header">
-          <h1 class="logo">
-            <a href="/board/list">
-              <img src="/assets/img/logo.png" alt="로고이미지">
-            </a>
-          </h1>
-
-          <div class="profile-box">
-
-          </div>
-
-          <h2 class="intro-text">Welcome</h2>
-          <a href="#" class="menu-open">
-            <span class="menu-txt">MENU</span>
-            <span class="lnr lnr-menu"></span>
+  <body>
+    <!-- header -->
+    <header>
+      <div class="inner-header">
+        <h1 class="logo">
+          <a href="/board/list">
+            <img src="/assets/img/logo.png" alt="로고이미지" />
           </a>
+        </h1>
+
+        <div class="profile-box"></div>
+
+        <h2 class="intro-text">Welcome</h2>
+        <a href="#" class="menu-open">
+          <span class="menu-txt">MENU</span>
+          <span class="lnr lnr-menu"></span>
+        </a>
+      </div>
+
+      <nav class="gnb">
+        <a href="#" class="close">
+          <span class="lnr lnr-cross"></span>
+        </a>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="/board/list">Board</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="/members/sign-up">Sign Up</a></li>
+          <li><a href="/members/sign-in">Sign In</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div id="wrap">
+      <div class="main-title-wrapper">
+        <h1 class="main-title">꾸러기 게시판</h1>
+        <button class="add-btn">새 글 쓰기</button>
+      </div>
+
+      <div class="top-section">
+        <!-- 검색창 영역 -->
+        <div class="search">
+          <form id="search-form">
+            <select class="form-select" name="type" id="search-type">
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+              <option value="writer">작성자</option>
+              <option value="tc">제목+내용</option>
+            </select>
+
+            <input type="text" class="form-control" name="keyword" />
+
+            <button class="btn btn-primary" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </form>
         </div>
 
-        <nav class="gnb">
-          <a href="#" class="close">
-            <span class="lnr lnr-cross"></span>
-          </a>
-          <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="/board/list">Board</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a href="/members/sign-up">Sign Up</a></li>
-            <li><a href="/members/sign-in">Sign In</a></li>
-          </ul>
-        </nav>
-
-      </header>
-
-      <div id="wrap">
-
-        <div class="main-title-wrapper">
-          <h1 class="main-title">꾸러기 게시판</h1>
-          <button class="add-btn">새 글 쓰기</button>
+        <div class="amount">
+          <div><a href="#">6</a></div>
+          <div><a href="#">18</a></div>
+          <div><a href="#">30</a></div>
         </div>
+      </div>
 
-
-        <div class="top-section">
-          <!-- 검색창 영역 -->
-          <div class="search">
-            <form>
-
-              <select class="form-select" name="type" id="search-type">
-                <option value="title">제목</option>
-                <option value="content">내용</option>
-                <option value="writer">작성자</option>
-                <option value="tc">제목+내용</option>
-              </select>
-
-              <input type="text" class="form-control" name="keyword">
-
-              <button class="btn btn-primary" type="submit">
-                <i class="fas fa-search"></i>
-              </button>
-
-            </form>
-          </div>
-
-          <div class="amount">
-            <div><a href="#">6</a></div>
-            <div><a href="#">18</a></div>
-            <div><a href="#">30</a></div>
-          </div>
-
-        </div>
-
-        <div class="card-container">
-
-              <!-- <div class="card-wrapper">
+      <div class="card-container">
+        <!-- <div class="card-wrapper">
                 <section class="card" data-bno="1">
                   <div class="card-title-wrapper">
                     <h2 class="card-title">하하호호</h2>
@@ -146,194 +150,235 @@
                   </div>
                 </section> -->
 
-
-                <!-- 관리자이거나 본인이 쓴글에만 렌더링되도록 -->
-                <!-- <div class="card-btn-group">
+        <!-- 관리자이거나 본인이 쓴글에만 렌더링되도록 -->
+        <!-- <div class="card-btn-group">
                   <button class="del-btn">
                     <i class="fas fa-times"></i>
                   </button>
                 </div>
 
               </div> -->
-              <!-- end div.card-wrapper -->
-
-
-        </div>
-        <!-- end div.card-container -->
-
-        <!-- 게시글 목록 하단 영역 -->
-        <div class="bottom-section">
-
-          <!-- 페이지 버튼 영역 -->
-          <nav aria-label="Page navigation example">
-            <ul class="pagination pagination-lg pagination-custom">
-
-            </ul>
-          </nav>
-
-        </div>
-        <!-- end div.bottom-section -->
-
+        <!-- end div.card-wrapper -->
       </div>
-      <!-- end div.wrap -->
+      <!-- end div.card-container -->
 
+      <!-- 게시글 목록 하단 영역 -->
+      <div class="bottom-section">
+        <!-- 페이지 버튼 영역 -->
+        <nav aria-label="Page navigation example">
+          <ul class="pagination pagination-lg pagination-custom"></ul>
+        </nav>
+      </div>
+      <!-- end div.bottom-section -->
+    </div>
+    <!-- end div.wrap -->
 
-      <!-- 모달 창 -->
-      <div class="modal" id="modal">
-        <div class="modal-content">
-          <p>정말로 삭제할까요?</p>
-          <div class="modal-buttons">
-            <button class="confirm" id="confirmDelete"><i class="fas fa-check"></i> 예</button>
-            <button class="cancel" id="cancelDelete"><i class="fas fa-times"></i> 아니오</button>
-          </div>
+    <!-- 모달 창 -->
+    <div class="modal" id="modal">
+      <div class="modal-content">
+        <p>정말로 삭제할까요?</p>
+        <div class="modal-buttons">
+          <button class="confirm" id="confirmDelete">
+            <i class="fas fa-check"></i> 예
+          </button>
+          <button class="cancel" id="cancelDelete">
+            <i class="fas fa-times"></i> 아니오
+          </button>
         </div>
       </div>
+    </div>
 
+    <script>
+      const $cardContainer = document.querySelector(".card-container");
 
+      const API_URL = "/api/v1/boards";
 
-      <script>
-
-        const $cardContainer = document.querySelector('.card-container');
-
-        const API_URL = "/api/v1/boards"
-
-        async function getListData() {
-          const res = await fetch(API_URL);
-          const data = await res.json();
-          
-          console.log(data);
-         
-          rendData(data);
+      async function getListData(item) {
+        let url = API_URL;
+        if (item) {
+          url += `?searchOption=\${item.type}&keyword=\${item.keyword}`;
+          console.log(url);
         }
+        const res = await fetch(url);
+        const data = await res.json();
 
-        getListData();
+        console.log(data);
 
-        function rendData(data){
-          data.forEach(element => {
-            const now = element.regDateTime.split('T')[0];
+        rendData(data);
+      }
 
-            
-            $cardContainer.innerHTML +=
-            `              
-            <div class="card-wrapper">
-            <section class="card" data-bno="\${element.id}">
-                  <div class="card-title-wrapper">
-                    <h2 class="card-title">\${element.title}</h2>
-                    <div class="time-view-wrapper">
-                      <div class="time">
-                        <i class="far fa-clock"></i>
-                        \${now}
-                      </div>
-
-                      <div class="view">
-                        <i class="fas fa-eye"></i>
-                        <span class="view-count">0</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="card-content">
-                    \${element.content}
-                  </div>
-                </section>
-                </div>
-
-                <div class="card-btn-group">
-                  <button class="del-btn">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-`
-          });
-      
-        }
-
-
-
-
-        //================= 삭제버튼 스크립트 =================//
-        const modal = document.getElementById('modal'); // 모달창 얻기
-        const confirmDelete = document.getElementById('confirmDelete'); // 모달 삭제 확인버튼
-        const cancelDelete = document.getElementById('cancelDelete'); // 모달 삭제 취소 버튼
-
-        $cardContainer.addEventListener('click', e => {
-          // 삭제 버튼을 눌렀다면~
-          if (e.target.matches('.card-btn-group *')) {
-            console.log('삭제버튼 클릭');
-            modal.style.display = 'flex'; // 모달 창 띄움
-
-            // 확인 버튼 이벤트
-            confirmDelete.onclick = e => {
-              // 삭제 처리 로직
-
-              modal.style.display = 'none'; // 모달 창 닫기
-            };
-
-
-            // 취소 버튼 이벤트
-            cancelDelete.onclick = e => {
-              modal.style.display = 'none'; // 모달 창 닫기
-            };
-          }
+      async function delListItem(id) {
+        const res = await fetch(API_URL + "/" + id, {
+          method: "DELETE",
         });
+        if (res.status === 200) {
+          getListData();
+        } else {
+          alert("error");
+        }
+      }
 
-        // 전역 이벤트로 모달창 닫기
-        window.addEventListener('click', e => {
-          if (e.target === modal) {
-            modal.style.display = 'none';
-          }
+      async function countListItem(id) {
+        const res = await fetch(API_URL + "/" + id, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json", // JSON 데이터 전송
+          },
         });
-
-        //========== 게시물 목록 스크립트 ============//
-
-        function removeDown(e) {
-          if (!e.target.matches('.card-container *')) return;
-          const $targetCard = e.target.closest('.card-wrapper');
-          $targetCard?.removeAttribute('id', 'card-down');
+        if (res.status === 200) {
+          getListData();
+        } else {
+          alert("error");
         }
+      }
 
-        function removeHover(e) {
-          if (!e.target.matches('.card-container *')) return;
-          const $targetCard = e.target.closest('.card');
-          $targetCard?.classList.remove('card-hover');
+      getListData();
 
-          const $delBtn = e.target.closest('.card-wrapper')?.querySelector('.del-btn');
-          if ($delBtn) $delBtn.style.opacity = '0';
+      function rendData(data) {
+        $cardContainer.innerHTML = "";
+
+        if (!data) {
+          return;
         }
+        data.forEach((element) => {
+          const now = element.regDateTime.split("T")[0];
 
+          $cardContainer.innerHTML += `
+                  <div class="card-wrapper">
+                  <section class="card" data-bno="\${element.id}">
+                        <div class="card-title-wrapper">
+                          <h2 class="card-title">\${element.title}</h2>
+                          <div class="time-view-wrapper">
+                            <div class="time">
+                              <i class="far fa-clock"></i>
+                              \${now}
+                            </div>
 
+                            <div class="view">
+                              <i class="fas fa-eye"></i>
+                              <span class="view-count">\${element.viewCount}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-content">
+                          \${element.content}
+                        </div>
+                      </section>
+                                      <div class="card-btn-group">
+                        <button class="del-btn">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                      </div>
+      `;
+        });
+      }
 
-        $cardContainer.onmouseover = e => {
+      //================= 조회수 스크립트 =================//
+      $cardContainer.addEventListener("click", (e) => {
+        const selectedItemId = e.target
+          .closest(".card-wrapper")
+          .querySelector(".card").dataset.bno;
 
-          if (!e.target.matches('.card-container *')) return;
+          countListItem(selectedItemId);
+      });
 
-          const $targetCard = e.target.closest('.card');
-          $targetCard?.classList.add('card-hover');
+      //================= 검색버튼 스크립트 =================//
+      const $searchForm = document.getElementById("search-form");
 
-          const $delBtn = e.target.closest('.card-wrapper')?.querySelector('.del-btn');
-          if ($delBtn) $delBtn.style.opacity = '1';
+      $searchForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const searchForm = new FormData($searchForm);
+
+        const item = Object.fromEntries(searchForm.entries());
+
+        getListData(item);
+      });
+
+      //================= 삭제버튼 스크립트 =================//
+      const modal = document.getElementById("modal"); // 모달창 얻기
+      const confirmDelete = document.getElementById("confirmDelete"); // 모달 삭제 확인버튼
+      const cancelDelete = document.getElementById("cancelDelete"); // 모달 삭제 취소 버튼
+
+      $cardContainer.addEventListener("click", (e) => {
+        // 삭제 버튼을 눌렀다면~
+        if (e.target.matches(".card-btn-group *")) {
+          console.log("삭제버튼 클릭");
+
+          const selectedItemId = e.target
+            .closest(".card-wrapper")
+            .querySelector(".card").dataset.bno;
+
+          modal.style.display = "flex"; // 모달 창 띄움
+
+          // 확인 버튼 이벤트
+          confirmDelete.onclick = (e) => {
+            // 삭제 처리 로직
+            delListItem(selectedItemId);
+            modal.style.display = "none"; // 모달 창 닫기
+          };
+
+          // 취소 버튼 이벤트
+          cancelDelete.onclick = (e) => {
+            modal.style.display = "none"; // 모달 창 닫기
+          };
         }
+      });
 
-        $cardContainer.onmousedown = e => {
+      // 전역 이벤트로 모달창 닫기
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      });
 
-          if (e.target.matches('.card-container .card-btn-group *')) return;
+      //========== 게시물 목록 스크립트 ============//
 
-          const $targetCard = e.target.closest('.card-wrapper');
-          $targetCard?.setAttribute('id', 'card-down');
-        };
+      function removeDown(e) {
+        if (!e.target.matches(".card-container *")) return;
+        const $targetCard = e.target.closest(".card-wrapper");
+        $targetCard?.removeAttribute("id", "card-down");
+      }
 
-        $cardContainer.onmouseup = removeDown;
+      function removeHover(e) {
+        if (!e.target.matches(".card-container *")) return;
+        const $targetCard = e.target.closest(".card");
+        $targetCard?.classList.remove("card-hover");
 
-        $cardContainer.addEventListener('mouseout', removeDown);
-        $cardContainer.addEventListener('mouseout', removeHover);
+        const $delBtn = e.target
+          .closest(".card-wrapper")
+          ?.querySelector(".del-btn");
+        if ($delBtn) $delBtn.style.opacity = "0";
+      }
 
-        // write button event
-        document.querySelector('.add-btn').onclick = e => {
-          window.location.href = '/board/write';
-        };
+      $cardContainer.onmouseover = (e) => {
+        if (!e.target.matches(".card-container *")) return;
 
+        const $targetCard = e.target.closest(".card");
+        $targetCard?.classList.add("card-hover");
 
-      </script>
+        const $delBtn = e.target
+          .closest(".card-wrapper")
+          ?.querySelector(".del-btn");
+        if ($delBtn) $delBtn.style.opacity = "1";
+      };
 
-    </body>
+      $cardContainer.onmousedown = (e) => {
+        if (e.target.matches(".card-container .card-btn-group *")) return;
 
-    </html>
+        const $targetCard = e.target.closest(".card-wrapper");
+        $targetCard?.setAttribute("id", "card-down");
+      };
+
+      $cardContainer.onmouseup = removeDown;
+
+      $cardContainer.addEventListener("mouseout", removeDown);
+      $cardContainer.addEventListener("mouseout", removeHover);
+
+      // write button event
+      document.querySelector(".add-btn").onclick = (e) => {
+        window.location.href = "/board/write";
+      };
+    </script>
+  </body>
+</html>
