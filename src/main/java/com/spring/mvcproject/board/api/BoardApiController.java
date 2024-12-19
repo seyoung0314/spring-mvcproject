@@ -1,14 +1,18 @@
 package com.spring.mvcproject.board.api;
 
 
+import com.spring.mvcproject.board.dto.request.BoardSaveDto;
 import com.spring.mvcproject.board.entity.Board;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -39,11 +43,11 @@ public class BoardApiController {
     public List<Board> getListData(
             @RequestParam(required = false, defaultValue = "") String searchOption,
             @RequestParam(required = false, defaultValue = "") String keyword
-    ){
+    ) {
         Comparator<Board> comparing = Comparator.comparing(Board::getRegDateTime).reversed();
         Predicate<Board> filterOption = null;
 
-        switch (searchOption){
+        switch (searchOption) {
             case "title":
                 filterOption = board -> board.getTitle().contains(keyword);
                 break;
@@ -69,44 +73,83 @@ public class BoardApiController {
     @DeleteMapping("/{id}")
     public String deleteListData(
             @PathVariable Long id
-    ){
+    ) {
 
         Board selectedItem = null;
         for (Board board : boardList) {
-            if(board.getId().equals(id)){
+            if (board.getId().equals(id)) {
                 selectedItem = board;
                 break;
             }
         }
         boardList.remove(selectedItem);
 
-        return id+" 삭제";
+        return id + " 삭제";
     }
+
     //등록 post
     @PostMapping
-    public String postListData(
-            @RequestBody Board board
-    ){
+    public ResponseEntity<?> postListData(
+            @RequestBody @Valid BoardSaveDto dto
+            , BindingResult bindingResult
+    ) {
 //        String textOnly = board.getContent().replaceAll("<[^>]*>", "");
-        System.out.println("board = " + board);
+        System.out.println("dto = " + dto);
 
+        if (bindingResult.hasErrors()) {
+            System.out.println("================================");
+
+            Map<String, String> errorMap = new HashMap<>();
+            // .getFieldError 은 첫번째 에러만 반환
+//            FieldError fieldError = bindingResult.getFieldError();
+//            System.out.println("fieldError = " + fieldError);
+
+            // .getFieldErrors 에러들을 리스트로 반환
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            fieldErrors.forEach(error -> {
+                errorMap.put(error.getField(), error.getDefaultMessage());
+            });
+            int errorCount = bindingResult.getErrorCount() - 1;
+
+            errorMap.put("errorCount", String.valueOf(errorCount));
+
+            for (String s : errorMap.keySet()) {
+                System.out.println("--------------------------------");
+                System.out.println("s = " + s);
+                System.out.println("errorMap.get(s) = " + errorMap.get(s));
+            }
+            System.out.println(errorCount + "개 실패");
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(errorMap);
+        }
+
+        Board board = new Board();
+
+        board.setTitle(dto.getTitle());
+        board.setContent(dto.getContent());
         board.setId(idx++);
         board.setRegDateTime(LocalDateTime.now());
 
         boardList.add(board);
-        return "추가성공";
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                // .body 는 json형태로 변환해서 반환시켜줌
+                .body("성공");
     }
 
     //수정 (조회수)
     @PutMapping("/{id}")
     public String putViewCount(
             @PathVariable Long id
-    ){
+    ) {
         Board selectedItem = null;
         for (Board board : boardList) {
-            if(board.getId().equals(id)){
+            if (board.getId().equals(id)) {
                 selectedItem = board;
-                selectedItem.setViewCount(selectedItem.getViewCount()+1);
+                selectedItem.setViewCount(selectedItem.getViewCount() + 1);
                 break;
             }
         }

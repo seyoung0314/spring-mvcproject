@@ -10,6 +10,12 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>스프링 연습프로젝트 사이트</title>
 
+    <!-- 토스트 css -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+      rel="stylesheet"
+    />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -138,6 +144,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       .ck-editor__editable p {
         margin: 0;
       }
+
     </style>
   </head>
 
@@ -243,25 +250,34 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         const item = Object.fromEntries(formData.entries());
 
         // 게시판 라이브러리가 p태그 포함해서 줘서 제거하고 서버로 보냄
-        const content = formData.get('content').replace(/<[^>]*>/g, "");
+        const content = formData.get("content").replace(/<[^>]*>/g, "");
         item.content = content;
 
-        console.log('item');
+        console.log("item");
         console.log(item);
 
         postDataItem(item);
       });
 
-      async function postDataItem(item){
+      async function postDataItem(item) {
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(item),
         });
         if (res.status === 200) {
-          window.location.href = '/board/list';
-        } else {
-          alert("error");
+          window.location.href = "/board/list";
+        } else if (res.status === 400) {
+          const error = await res.json();
+          
+          for (key in error) {
+            console.log("=========================");
+            console.log(key);
+            console.log(error[key]);
+            if(key !=="errorCount"){
+              alert(error[key]);
+            }
+          }
         }
       }
     </script>
