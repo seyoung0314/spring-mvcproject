@@ -1,5 +1,6 @@
 package com.spring.mvcproject.chap2_5.score.api;
 
+import com.spring.mvcproject.chap2_5.score.dto.request.ScoreCreateDto;
 import com.spring.mvcproject.chap2_5.score.entity.Score;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,18 +59,34 @@ public class ScoreApiController {
         return comparing;
     }
 
-    //http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
-    // 학생 추가
+//    //http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
+//    // 학생 추가
+//    @PostMapping
+//    public String addStudent(
+//            @RequestBody Score score
+////        String name,
+////        int kor,
+////        int eng,
+////        int math
+//    ) {
+//        // 여기서 검증을 하면 단일책임원칙 위반....
+//        score.setId(nextId++);
+
+    /// /        Score newStudent = new Score(nextId++, name, kor, eng, math);
+//        scoreStore.put(score.getId(), score);
+//        return "";
+//    }
+
+//http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
+// 학생 추가
     @PostMapping
     public String addStudent(
-            @RequestBody Score score
-//        String name,
-//        int kor,
-//        int eng,
-//        int math
+            @RequestBody ScoreCreateDto dto
     ) {
+        // ScoreCreateDto 를 Score로 변환하는 작업
+        Score score = new Score(dto);
         score.setId(nextId++);
-//        Score newStudent = new Score(nextId++, name, kor, eng, math);
+
         scoreStore.put(score.getId(), score);
         return "";
     }

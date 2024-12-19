@@ -159,11 +159,17 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
       }
 
       // 서버로 성정 등록 post요청을 전송하는 함수
-      async function fetchPostScore(scoreObj) {
+      async function fetchPostScore({name,kor,eng,math}) {
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(scoreObj),
+          // body: JSON.stringify(scoreObj),
+          body: JSON.stringify({
+            sName :name,
+            korean : kor,
+            english : eng,
+            math : math,
+          }),
         });
 
         if (res.status === 200) {
