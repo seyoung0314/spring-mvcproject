@@ -23,6 +23,7 @@ public class ScoreApiController {
         scoreStore.put(s3.getId(), s3);
     }
 
+
     // 전체 성적조회 (정렬 파라미터를 읽어야 함)
     // /api/v1/scores?sort=name
     @GetMapping

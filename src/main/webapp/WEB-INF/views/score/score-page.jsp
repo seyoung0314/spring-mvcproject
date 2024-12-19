@@ -83,7 +83,13 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
   <body>
     <div class="wrap">
       <section class="score">
-        <h1>시험 점수 등록</h1>
+        <h1>${title} 애플리케이션</h1>
+        <ul>
+          <!-- ${foods} -->
+           <!-- <c:forEach var="f" items="${foods}">
+            <li>${f}</li>
+           </c:forEach> -->
+        </ul>
         <form id="addForm" method="post">
           <label> # 이름: <input type="text" name="name" /> </label>
           <label> # 국어: <input type="text" name="kor" /> </label>
