@@ -83,12 +83,22 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
   <body>
     <div class="wrap">
       <section class="score">
-        <h1>시험 점수 등록</h1>
+        <h1>${title} 애플리케이션</h1>
+        <ul>
+          <!-- ${foods} -->
+          <!-- <c:forEach var="f" items="${foods}">
+            <li>${f}</li>
+           </c:forEach> -->
+        </ul>
         <form id="addForm" method="post">
           <label> # 이름: <input type="text" name="name" /> </label>
+          <p class="error" id="studentName"></p>
           <label> # 국어: <input type="text" name="kor" /> </label>
+          <p class="error" id="korean"></p>
           <label> # 영어: <input type="text" name="eng" /> </label>
+          <p class="error" id="english"></p>
           <label> # 수학: <input type="text" name="math" /> </label>
+          <p class="error" id="math"></p>
           <label>
             <button id="createBtn" type="submit">확인</button>
             <button id="go-home" type="button">홈화면으로</button>
@@ -153,18 +163,33 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
       }
 
       // 서버로 성정 등록 post요청을 전송하는 함수
-      async function fetchPostScore(scoreObj) {
+      async function fetchPostScore({ name, kor, eng, math }) {
+        // 요청 시작시 에러메세지 리셋
+        document.querySelectorAll(".error").forEach((error) => {
+          error.textContent = "";
+        });
+
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(scoreObj),
+          // body: JSON.stringify(scoreObj),
+          body: JSON.stringify({
+            studentName: name,
+            korean: kor,
+            english: eng,
+            math: math,
+          }),
         });
 
         if (res.status === 200) {
           fetchGetScores();
           $form.reset();
-        } else {
-          alert("error");
+        } else if (res.status === 400) {
+          const errorJson = await res.json();
+          for (const property in errorJson) {
+            console.log(property);
+            document.getElementById(property).textContent = errorJson[property];
+          }
         }
       }
 

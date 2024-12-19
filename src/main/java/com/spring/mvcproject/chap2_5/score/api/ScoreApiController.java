@@ -1,6 +1,11 @@
 package com.spring.mvcproject.chap2_5.score.api;
 
+import com.spring.mvcproject.chap2_5.score.dto.request.ScoreCreateDto;
 import com.spring.mvcproject.chap2_5.score.entity.Score;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -22,6 +27,7 @@ public class ScoreApiController {
         scoreStore.put(s2.getId(), s2);
         scoreStore.put(s3.getId(), s3);
     }
+
 
     // 전체 성적조회 (정렬 파라미터를 읽어야 함)
     // /api/v1/scores?sort=name
@@ -57,20 +63,55 @@ public class ScoreApiController {
         return comparing;
     }
 
-    //http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
-    // 학생 추가
+//    //http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
+//    // 학생 추가
+//    @PostMapping
+//    public String addStudent(
+//            @RequestBody Score score
+////        String name,
+////        int kor,
+////        int eng,
+////        int math
+//    ) {
+//        // 여기서 검증을 하면 단일책임원칙 위반....
+//        score.setId(nextId++);
+
+    /// /        Score newStudent = new Score(nextId++, name, kor, eng, math);
+//        scoreStore.put(score.getId(), score);
+//        return "";
+//    }
+
+//http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
+// 학생 추가
     @PostMapping
-    public String addStudent(
-            @RequestBody Score score
-//        String name,
-//        int kor,
-//        int eng,
-//        int math
-    ) {
+    public ResponseEntity<?> addStudent(
+            @RequestBody @Valid ScoreCreateDto dto
+            , BindingResult bindingResult
+            ) {
+        if(bindingResult.hasErrors()){  //입력값 검증에서 에러가 발생했다면
+            System.out.println("=======================================");
+
+            Map<String, String> errorMap = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(err -> {
+                errorMap.put(err.getField(), err.getDefaultMessage());
+            });
+
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(errorMap)
+                    ;
+
+        }
+        // ScoreCreateDto 를 Score로 변환하는 작업
+        Score score = dto.toEntity();
         score.setId(nextId++);
-//        Score newStudent = new Score(nextId++, name, kor, eng, math);
+
         scoreStore.put(score.getId(), score);
-        return "";
+        return ResponseEntity
+                .ok()
+                .body("성적 정보 생성 완료! " + score);
+
     }
 
     //성정 정보 삭제요청 처리

@@ -10,6 +10,12 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>스프링 연습프로젝트 사이트</title>
 
+    <!-- 토스트 css -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+      rel="stylesheet"
+    />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -138,6 +144,17 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       .ck-editor__editable p {
         margin: 0;
       }
+
+      /* Toastr error 배경색과 글자 색상 */
+      .toast-error {
+        background-color: #e74c3c !important; /* 빨간색 배경 */
+        color: white !important; /* 하얀색 글자 */
+      }
+
+      .toast-top-center {
+  top: 50% !important; /* 수직으로 중앙 정렬 */
+  transform: translateY(-50%) !important; /* 정확한 중앙 위치 맞추기 */
+}
     </style>
   </head>
 
@@ -230,6 +247,10 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         .catch((err) => console.error(err));
     </script>
 
+    <!-- 토스트 -->
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+
     <!-- custom script -->
     <script>
       const $form = document.getElementById("board-form");
@@ -243,26 +264,56 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         const item = Object.fromEntries(formData.entries());
 
         // 게시판 라이브러리가 p태그 포함해서 줘서 제거하고 서버로 보냄
-        const content = formData.get('content').replace(/<[^>]*>/g, "");
+        const content = formData.get("content").replace(/<[^>]*>/g, "");
         item.content = content;
 
-        console.log('item');
+        console.log("item");
         console.log(item);
 
         postDataItem(item);
       });
 
-      async function postDataItem(item){
+      async function postDataItem(item) {
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(item),
         });
         if (res.status === 200) {
-          window.location.href = '/board/list';
-        } else {
-          alert("error");
+          window.location.href = "/board/list";
+        } else if (res.status === 400) {
+          const error = await res.json();
+          
+          for (key in error) {
+            console.log("=========================");
+            console.log(key);
+            console.log(error[key]);
+            if(key !=="errorCount"){
+              toastShow(key, error[key], 3000);
+            }
+          }
         }
+      }
+
+      function toastShow(title, content, time) {
+        toastr.options = {
+          closeButton: true,
+          debug: false,
+          positionClass: "toast-top-center",
+          showDuration: "300",
+          hideDuration: "1000",
+          timeOut: time,
+          extendedTimeOut: "1000",
+          showEasing: "swing",
+          hideEasing: "linear",
+          showMethod: "fadeIn",
+          hideMethod: "fadeOut",
+          // 색상 추가
+          backgroundColor: "#e74c3c", // error 색상: 빨간색
+          textColor: "white", // 글자색: 하얀색
+        };
+        toastr["error"](content);
+        // toastr.info(title, content, { timeOut: time });
       }
     </script>
   </body>
