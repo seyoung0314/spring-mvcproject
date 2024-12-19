@@ -15,10 +15,4 @@ public class Score {
     private String name;
     private int kor, eng, math; // 국영수 점수
 
-    public Score(ScoreCreateDto dto) {
-        this.name = dto.getSName();
-        this.kor = dto.getKorean();
-        this.eng = dto.getEnglish();
-        this.math = dto.getMath();
-    }
 }
