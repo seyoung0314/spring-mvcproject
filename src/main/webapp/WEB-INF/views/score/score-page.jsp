@@ -153,7 +153,7 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         data.forEach(({ id, maskingName, sum, avg, rank }) => {
           $scores.innerHTML += `
             <li data-score-id="\${id}">
-              # 이름 : \${maskingName}, 총점: \${sum}점, 
+              # 이름 : <a href="/score/\${id}">\${maskingName}</a>, 총점: \${sum}점, 
               평균: \${avg}점, 석차: \${rank}
               <a href='#' class='del-btn'>삭제
               </li>`;
@@ -250,9 +250,9 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
       });
 
       $scores.addEventListener("click", (e) => {
-        e.preventDefault();
-
+        
         if (!e.target.matches(".del-btn")) return;
+        e.preventDefault();
 
         // 서버에 삭제요청 전송
         // 클릭한 요소가 가진 서버 id를 읽어내야 함

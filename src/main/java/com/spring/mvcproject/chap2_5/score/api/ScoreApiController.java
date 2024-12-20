@@ -1,13 +1,12 @@
 package com.spring.mvcproject.chap2_5.score.api;
 
-import com.spring.mvcproject.chap2_5.score.dto.reponse.ScoreListDto;
+import com.spring.mvcproject.chap2_5.score.dto.response.ScoreDetailDto;
+import com.spring.mvcproject.chap2_5.score.dto.response.ScoreListDto;
 import com.spring.mvcproject.chap2_5.score.dto.request.ScoreCreateDto;
 import com.spring.mvcproject.chap2_5.score.entity.Score;
-import jakarta.servlet.jsp.el.NotFoundELResolver;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -83,7 +82,6 @@ public class ScoreApiController {
         }
     }
 
-
     private static Comparator<ScoreListDto> getScoreComparator(String sort) {
         Comparator<ScoreListDto> comparing = comparing(ScoreListDto::getId);
 
@@ -121,7 +119,34 @@ public class ScoreApiController {
 //        return "";
 //    }
 
-//http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
+    //성적 상세조회 요청
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findOne(@PathVariable Long id) {
+        Score score = scoreStore.get(id);
+        if (score == null) {
+            return ResponseEntity
+                    .status(404)
+                    .body("해당 정보를 찾을 수 없습니다.");
+        }
+        // 석차와 총 학생수를 구하기 위해 락생 목록을 가져옴
+        List<Score> scoreList = new ArrayList<>(scoreStore.values());
+
+        scoreList.sort(Comparator.comparing((Score s) -> s.getKor() + s.getEng() + s.getMath()).reversed());
+
+        ScoreDetailDto responseDto = new ScoreDetailDto(score, scoreList.size());
+
+        for (Score s : scoreList) {
+            if (s.getId().equals(responseDto.getId())) {
+                responseDto.setRank(scoreList.indexOf(s) + 1);
+            }
+        }
+
+        return ResponseEntity.ok()
+                .body(responseDto);
+    }
+
+
+    //http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
 // 학생 추가
     @PostMapping
     public ResponseEntity<?> addStudent(

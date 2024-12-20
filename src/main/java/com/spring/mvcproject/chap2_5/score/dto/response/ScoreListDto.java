@@ -1,11 +1,9 @@
-package com.spring.mvcproject.chap2_5.score.dto.reponse;
+package com.spring.mvcproject.chap2_5.score.dto.response;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.spring.mvcproject.chap2_5.score.entity.Score;
 import lombok.*;
-
-import java.util.Map;
 
 @Getter
 @Setter
