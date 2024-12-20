@@ -141,11 +141,20 @@ prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         $scores.innerHTML = "";
         $count.textContent = data.length;
 
-        data.forEach(({ id, name, kor, eng, math }) => {
+        // data.forEach(({ id, name, kor, eng, math }) => {
+        //   $scores.innerHTML += `
+        //     <li data-score-id="\${id}">
+        //       # 이름 : \${name}, 국어: \${kor}점, 
+        //       영어: \${eng}점, 수학: \${math}점
+        //       <a href='#' class='del-btn'>삭제
+        //       </li>`;
+        // });
+
+        data.forEach(({ id, maskingName, sum, avg, rank }) => {
           $scores.innerHTML += `
             <li data-score-id="\${id}">
-              # 이름 : \${name}, 국어: \${kor}점, 
-              영어: \${eng}점, 수학: \${math}점
+              # 이름 : \${maskingName}, 총점: \${sum}점, 
+              평균: \${avg}점, 석차: \${rank}
               <a href='#' class='del-btn'>삭제
               </li>`;
         });

@@ -1,7 +1,9 @@
 package com.spring.mvcproject.chap2_5.score.api;
 
+import com.spring.mvcproject.chap2_5.score.dto.reponse.ScoreListDto;
 import com.spring.mvcproject.chap2_5.score.dto.request.ScoreCreateDto;
 import com.spring.mvcproject.chap2_5.score.entity.Score;
+import jakarta.servlet.jsp.el.NotFoundELResolver;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
 
 @RestController
 @RequestMapping("/api/v1/scores")
@@ -31,31 +35,67 @@ public class ScoreApiController {
 
     // 전체 성적조회 (정렬 파라미터를 읽어야 함)
     // /api/v1/scores?sort=name
+//    @GetMapping
+//    public List<Score> scoreList(
+//            @RequestParam(required = false, defaultValue = "") String sort
+//    ) {
+//
+//        List<Score> result = new ArrayList<>(scoreStore.values())
+//                .stream()
+//                .sorted(getScoreComparator(sort))
+//                .collect(Collectors.toList());
+//        return result;
+//    }
+
     @GetMapping
-    public List<Score> scoreList(
+    public ResponseEntity<List<ScoreListDto>> scoreList(
             @RequestParam(required = false, defaultValue = "") String sort
     ) {
 
-        List<Score> result = new ArrayList<>(scoreStore.values())
+//        ArrayList<ScoreListDto> responseList = new ArrayList<>();
+//
+//        ArrayList<Score> originalScores = new ArrayList<>(scoreStore.values());
+//        for (Score score : originalScores) {
+//            ScoreListDto dto = new ScoreListDto(score);
+//            responseList.add(dto);
+//        }
+
+        List<ScoreListDto> responseList = new ArrayList<>(scoreStore.values())
                 .stream()
-                .sorted(getScoreComparator(sort))
+                .map(score ->
+                        new ScoreListDto(score))
                 .collect(Collectors.toList());
-        return result;
+
+        calculatorRank(responseList);
+
+        responseList.sort(getScoreComparator(sort));
+
+        return ResponseEntity
+                .ok()
+                .body(responseList);
     }
 
-    private static Comparator<Score> getScoreComparator(String sort) {
-        Comparator<Score> comparing = Comparator.comparing(Score::getId);
+    private void calculatorRank(List<ScoreListDto> responseList) {
+        responseList.sort(comparing(ScoreListDto::getAverage).reversed());
+
+        for (ScoreListDto dto : responseList) {
+            dto.setRank(responseList.indexOf(dto) + 1);
+        }
+    }
+
+
+    private static Comparator<ScoreListDto> getScoreComparator(String sort) {
+        Comparator<ScoreListDto> comparing = comparing(ScoreListDto::getId);
 
         switch (sort) {
             case "id":
-                comparing = Comparator.comparing(Score::getId);
+                comparing = comparing(ScoreListDto::getId);
                 break;
             case "name":
-                comparing = Comparator.comparing(Score::getName);
+                comparing = comparing(ScoreListDto::getMaskingName);
                 break;
             case "average":
-                comparing = Comparator.comparingDouble((Score score) ->
-                        (double) (score.getEng() + score.getKor() + score.getMath()) / 3).reversed();
+                comparing = Comparator.comparingDouble(ScoreListDto::getAverage).reversed();
                 break;
             default:
                 break;
@@ -87,8 +127,8 @@ public class ScoreApiController {
     public ResponseEntity<?> addStudent(
             @RequestBody @Valid ScoreCreateDto dto
             , BindingResult bindingResult
-            ) {
-        if(bindingResult.hasErrors()){  //입력값 검증에서 에러가 발생했다면
+    ) {
+        if (bindingResult.hasErrors()) {  //입력값 검증에서 에러가 발생했다면
             System.out.println("=======================================");
 
             Map<String, String> errorMap = new HashMap<>();
