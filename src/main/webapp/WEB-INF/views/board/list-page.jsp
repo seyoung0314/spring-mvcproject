@@ -194,47 +194,62 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       const API_URL = "/api/v1/boards";
 
       async function getListData(item) {
-        let url = API_URL;
+        try {
+          let url = API_URL;
 
-        // 아이템(검색옵션)이 있으면 검색옵션 추가
-        if (item) {
-          url += `?searchOption=\${item.type}&keyword=\${item.keyword}`;
-          console.log(url);
-        }
-        const res = await fetch(url);
-        const data = await res.json();
+          // 아이템(검색옵션)이 있으면 검색옵션 추가
+          if (item) {
+            url += `?searchOption=\${item.type}&keyword=\${item.keyword}`;
+            console.log(url);
+          }
+          const res = await fetch(url);
+          const data = await res.json();
 
-        console.log(data);
+          console.log(data);
 
-        if (res.status === 200) {
-          rendData(data);
-        } else {
-          alert("error");
+          if (res.status === 200) {
+            rendData(data);
+          } else {
+            alert("error");
+          }
+        } catch (error) {
+          console.error("get호출 에러", error);
+          alert(error);
         }
       }
 
       async function delListItem(id) {
-        const res = await fetch(API_URL + "/" + id, {
-          method: "DELETE",
-        });
-        if (res.status === 200) {
-          getListData();
-        } else {
-          alert("error");
+        try {
+          const res = await fetch(API_URL + "/" + id, {
+            method: "DELETE",
+          });
+          if (res.status === 200) {
+            getListData();
+          } else {
+            alert("error");
+          }
+        } catch (error) {
+          console.error("delete호출 에러", error);
+          alert(error);
         }
       }
 
       async function countListItem(id) {
-        const res = await fetch(API_URL + "/" + id, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json", // JSON 데이터 전송
-          },
-        });
-        if (res.status === 200) {
-          getListData();
-        } else {
-          alert("error");
+        try {
+          const res = await fetch(API_URL + "/" + id, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json", // JSON 데이터 전송
+            },
+          });
+          if (res.status === 200) {
+            getListData();
+          } else {
+            alert("error");
+          }
+        } catch (error) {
+          console.error("put호출 에러", error);
+          alert(error);
         }
       }
 
@@ -284,12 +299,11 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       $cardContainer.addEventListener("click", (e) => {
         e.preventDefault();
 
-        if (e.target.matches(".card-container *")){
-
+        if (e.target.matches(".card-container *")) {
           const selectedItemId = e.target
-          .closest(".card-wrapper")
-          .querySelector(".card").dataset.bno;
-          
+            .closest(".card-wrapper")
+            .querySelector(".card").dataset.bno;
+
           countListItem(selectedItemId);
         }
       });

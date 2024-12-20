@@ -152,9 +152,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       }
 
       .toast-top-center {
-  top: 50% !important; /* 수직으로 중앙 정렬 */
-  transform: translateY(-50%) !important; /* 정확한 중앙 위치 맞추기 */
-}
+        top: 50% !important; /* 수직으로 중앙 정렬 */
+        transform: translateY(-50%) !important; /* 정확한 중앙 위치 맞추기 */
+      }
     </style>
   </head>
 
@@ -264,8 +264,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         const item = Object.fromEntries(formData.entries());
 
         // 게시판 라이브러리가 p태그 포함해서 줘서 제거하고 서버로 보냄
-        const content = formData.get("content").replace(/<[^>]*>/g, "");
-        item.content = content;
+        // (이거 스타일 적용때문에 그런거였음..)
+        // const content = formData.get("content").replace(/<[^>]*>/g, "");
+        // item.content = content;
 
         console.log("item");
         console.log(item);
@@ -274,23 +275,33 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       });
 
       async function postDataItem(item) {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(item),
-        });
-        if (res.status === 200) {
-          window.location.href = "/board/list";
-        } else if (res.status === 400) {
-          const error = await res.json();
-          
-          for (key in error) {
-            console.log("=========================");
-            console.log(key);
-            console.log(error[key]);
-            if(key !=="errorCount"){
-              toastShow(key, error[key], 3000);
-            }
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(item),
+          });
+          if (res.status === 200) {
+            window.location.href = "/board/list";
+          } else if (res.status === 400) {
+            errorMessase(res);
+          } else {
+            alert("error");
+          }
+        } catch (error) {
+          console.error("post호출 에러", error);
+          alert(error);
+        }
+      }
+
+      async function errorMessase(res) {
+        const error = await res.json();
+        for (key in error) {
+          console.log("=========================");
+          console.log(key);
+          console.log(error[key]);
+          if (key !== "errorCount") {
+            toastShow(key, error[key], 3000);
           }
         }
       }

@@ -96,10 +96,12 @@ public class BoardApiController {
 //        String textOnly = board.getContent().replaceAll("<[^>]*>", "");
         System.out.println("dto = " + dto);
 
+        //입력값 검증 응답 처리 (aop위반 - 나중에 리팩토링할 예정)
         if (bindingResult.hasErrors()) {
             System.out.println("================================");
 
             Map<String, String> errorMap = new HashMap<>();
+
             // .getFieldError 은 첫번째 에러만 반환
 //            FieldError fieldError = bindingResult.getFieldError();
 //            System.out.println("fieldError = " + fieldError);
@@ -121,21 +123,17 @@ public class BoardApiController {
             System.out.println(errorCount + "개 실패");
 
             return ResponseEntity
-                    .badRequest()
+                    .badRequest()    //400
                     .body(errorMap);
         }
 
-        Board board = new Board();
-
-        board.setTitle(dto.getTitle());
-        board.setContent(dto.getContent());
+        Board board = dto.toEntity();
         board.setId(idx++);
-        board.setRegDateTime(LocalDateTime.now());
 
         boardList.add(board);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.OK)  //200
                 // .body 는 json형태로 변환해서 반환시켜줌
                 .body("성공");
     }
