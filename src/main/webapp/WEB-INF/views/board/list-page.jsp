@@ -205,6 +205,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           const res = await fetch(url);
           const data = await res.json();
 
+          console.log("========Get data");
+
           console.log(data);
 
           if (res.status === 200) {
@@ -262,30 +264,37 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           return;
         }
         data.forEach((element) => {
-          const now = element.regDateTime.split("T")[0];
+          // const now = element.regDateTime.split("T")[0];
+
+          let newArticle = "";
+          if(element.newArticle){
+            newArticle = "new ";
+          }
 
           $cardContainer.innerHTML += `
                   <div class="card-wrapper">
-                  <section class="card" data-bno="\${element.id}">
+                  <section class="card" data-bno="\${element.bno}">
                         <div class="card-title-wrapper">
-                          <h2 class="card-title">\${element.title}</h2>
+                          <h2 class="card-title">\${element.shortTitle}</h2>
                           <div class="time-view-wrapper">
                             <div class="time">
                               <i class="far fa-clock"></i>
-                              \${now}
+
+
+                              \${newArticle}\${element.date}
                             </div>
 
                             <div class="view">
                               <i class="fas fa-eye"></i>
-                              <span class="view-count">\${element.viewCount}</span>
+                              <span class="view-count">\${element.view}</span>
                             </div>
                           </div>
                         </div>
                         <div class="card-content">
-                          \${element.content}
+                          \${element.shortContent}
                         </div>
-                      </section>
-                                      <div class="card-btn-group">
+                      </section>      
+                      <div class="card-btn-group">
                         <button class="del-btn">
                           <i class="fas fa-times"></i>
                         </button>

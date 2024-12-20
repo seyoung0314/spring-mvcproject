@@ -2,7 +2,9 @@ package com.spring.mvcproject.board.api;
 
 
 import com.spring.mvcproject.board.dto.request.BoardSaveDto;
+import com.spring.mvcproject.board.dto.response.BoardListDto;
 import com.spring.mvcproject.board.entity.Board;
+import com.spring.mvcproject.chap2_5.score.dto.reponse.ScoreListDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +27,7 @@ public class BoardApiController {
 
     public BoardApiController() {
 
-//        Board board1 = new Board(idx++,"제목1","내용1",1,now);
+        Board board1 = new Board(idx++,"제목1","내용1",1,LocalDateTime.now().minusYears(5));
 //        Board board2 = new Board(idx++,"제목2","내용1",1,now);
 //        Board board3 = new Board(idx++,"제목3","내용1",1,now);
 
@@ -33,14 +35,14 @@ public class BoardApiController {
 //        Board board2 = Board.of(idx++,"제목2","내용1");
 //        Board board3 = Board.of(idx++,"제목3","내용1");
 //
-//        boardList.add(board1);
+        boardList.add(board1);
 //        boardList.add(board2);
 //        boardList.add(board3);
     }
 
     // 목록조회 get
     @GetMapping
-    public List<Board> getListData(
+    public ResponseEntity<List<BoardListDto>> getListData(
             @RequestParam(required = false, defaultValue = "") String searchOption,
             @RequestParam(required = false, defaultValue = "") String keyword
     ) {
@@ -63,10 +65,19 @@ public class BoardApiController {
             default:
                 filterOption = board -> true;
         }
-        return boardList.stream()
+
+        List<Board> filteredList = boardList.stream()
                 .filter(filterOption)
                 .sorted(comparing)
                 .collect(Collectors.toList());
+
+        List<BoardListDto> boardListDtos = filteredList.stream()
+                .map(board -> new BoardListDto(board))
+                .collect(Collectors.toList());
+
+        return ResponseEntity
+                .ok()
+                .body(boardListDtos);
     }
 
     //삭제 del
