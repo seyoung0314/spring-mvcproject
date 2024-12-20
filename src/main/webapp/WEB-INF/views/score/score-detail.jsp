@@ -98,8 +98,8 @@
         
         // 화면에 랜더링
         for(const property in data){
-          // console.log(property);
-          // console.log(data[property]);
+          console.log(property);
+          console.log(data[property]);
           const $target = document.getElementById(property);
           if(!$target){
             $target.textContent = data[property];

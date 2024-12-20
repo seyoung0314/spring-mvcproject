@@ -2,9 +2,9 @@ package com.spring.mvcproject.board.api;
 
 
 import com.spring.mvcproject.board.dto.request.BoardSaveDto;
+import com.spring.mvcproject.board.dto.response.BoardDetailDto;
 import com.spring.mvcproject.board.dto.response.BoardListDto;
 import com.spring.mvcproject.board.entity.Board;
-import com.spring.mvcproject.chap2_5.score.dto.reponse.ScoreListDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +79,27 @@ public class BoardApiController {
                 .ok()
                 .body(boardListDtos);
     }
+
+    // 목록 디테일 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<?> detailData(
+            @PathVariable Long id
+    ){
+
+        Board targetBoard = new Board();
+        for (Board board : boardList) {
+            if(board.getId().equals(id)){
+                targetBoard = board;
+            }
+        }
+        BoardDetailDto responseDto = new BoardDetailDto(targetBoard);
+        System.out.println(responseDto);
+
+        return ResponseEntity
+                .ok()
+                .body(responseDto);
+    }
+
 
     //삭제 del
     @DeleteMapping("/{id}")

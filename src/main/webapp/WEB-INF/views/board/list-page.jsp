@@ -240,6 +240,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             .querySelector(".card").dataset.bno;
 
           countListItem(selectedItemId);
+          window.location.href = "/board/detail/" + selectedItemId;
         }
       });
 

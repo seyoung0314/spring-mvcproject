@@ -55,6 +55,7 @@ public class BoardListDto {
         return  content.length() > 15 ? content.substring(0, 15)+"..." : content;
     }
 
+    //이거 중간에 글자 색 변경했을 경우 수정해야함
     // 게시판 글이 <p><span>태그를 포함하고 있어서 작성한 글만 줄이기
     public static String truncateHtmlText(String html, int maxLength) {
         // HTML 태그를 모두 제거한 텍스트만 추출
@@ -68,7 +69,11 @@ public class BoardListDto {
         // HTML을 복원하여 텍스트만 수정
         String truncatedHtml = html.replaceAll(">([^<]+)<", ">" + text + "<");
 
-        return truncatedHtml;
+        System.out.println("truncatedHtml = " + truncatedHtml);
+
+        String[] paragraphs = truncatedHtml.split("(?=<p>)");
+
+        return paragraphs[0];
     }
 
 
