@@ -2,9 +2,12 @@ package com.spring.mvcproject.chap2_5.score.routes;
 
 
 import com.spring.mvcproject.chap2_5.score.entity.Score;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.Map;
 // 성적관리에 필요한 jsp 파일들을 포워딩 하는 컨트롤러
 @Controller
 public class ScorePageController {
+    private static final Logger log = LoggerFactory.getLogger(ScorePageController.class);
 
 //    @GetMapping("/score/page")
 //    public String scorePage(Model model){
@@ -38,6 +42,17 @@ public class ScorePageController {
     public String scorePageSort(){
         //해당 jsp 파일의 경로를 적음
         return "score/score-page";
+    }
+
+    @GetMapping("/score/{id}")
+    public String detailPage(
+            @PathVariable Long id
+            ,Model model
+    ){
+
+        System.out.println("/score/%s : GET".formatted(id));
+        model.addAttribute("id",id);
+        return "score/score-detail";
     }
 
 }

@@ -2,6 +2,8 @@ package com.spring.mvcproject.board.api;
 
 
 import com.spring.mvcproject.board.dto.request.BoardSaveDto;
+import com.spring.mvcproject.board.dto.response.BoardDetailDto;
+import com.spring.mvcproject.board.dto.response.BoardListDto;
 import com.spring.mvcproject.board.entity.Board;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,7 @@ public class BoardApiController {
 
     public BoardApiController() {
 
-//        Board board1 = new Board(idx++,"제목1","내용1",1,now);
+        Board board1 = new Board(idx++,"제목1","내용1",1,LocalDateTime.now().minusYears(5));
 //        Board board2 = new Board(idx++,"제목2","내용1",1,now);
 //        Board board3 = new Board(idx++,"제목3","내용1",1,now);
 
@@ -33,14 +35,14 @@ public class BoardApiController {
 //        Board board2 = Board.of(idx++,"제목2","내용1");
 //        Board board3 = Board.of(idx++,"제목3","내용1");
 //
-//        boardList.add(board1);
+        boardList.add(board1);
 //        boardList.add(board2);
 //        boardList.add(board3);
     }
 
     // 목록조회 get
     @GetMapping
-    public List<Board> getListData(
+    public ResponseEntity<List<BoardListDto>> getListData(
             @RequestParam(required = false, defaultValue = "") String searchOption,
             @RequestParam(required = false, defaultValue = "") String keyword
     ) {
@@ -63,11 +65,41 @@ public class BoardApiController {
             default:
                 filterOption = board -> true;
         }
-        return boardList.stream()
+
+        List<Board> filteredList = boardList.stream()
                 .filter(filterOption)
                 .sorted(comparing)
                 .collect(Collectors.toList());
+
+        List<BoardListDto> boardListDtos = filteredList.stream()
+                .map(board -> new BoardListDto(board))
+                .collect(Collectors.toList());
+
+        return ResponseEntity
+                .ok()
+                .body(boardListDtos);
     }
+
+    // 목록 디테일 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<?> detailData(
+            @PathVariable Long id
+    ){
+
+        Board targetBoard = new Board();
+        for (Board board : boardList) {
+            if(board.getId().equals(id)){
+                targetBoard = board;
+            }
+        }
+        BoardDetailDto responseDto = new BoardDetailDto(targetBoard);
+        System.out.println(responseDto);
+
+        return ResponseEntity
+                .ok()
+                .body(responseDto);
+    }
+
 
     //삭제 del
     @DeleteMapping("/{id}")
@@ -96,10 +128,12 @@ public class BoardApiController {
 //        String textOnly = board.getContent().replaceAll("<[^>]*>", "");
         System.out.println("dto = " + dto);
 
+        //입력값 검증 응답 처리 (aop위반 - 나중에 리팩토링할 예정)
         if (bindingResult.hasErrors()) {
             System.out.println("================================");
 
             Map<String, String> errorMap = new HashMap<>();
+
             // .getFieldError 은 첫번째 에러만 반환
 //            FieldError fieldError = bindingResult.getFieldError();
 //            System.out.println("fieldError = " + fieldError);
@@ -121,21 +155,17 @@ public class BoardApiController {
             System.out.println(errorCount + "개 실패");
 
             return ResponseEntity
-                    .badRequest()
+                    .badRequest()    //400
                     .body(errorMap);
         }
 
-        Board board = new Board();
-
-        board.setTitle(dto.getTitle());
-        board.setContent(dto.getContent());
+        Board board = dto.toEntity();
         board.setId(idx++);
-        board.setRegDateTime(LocalDateTime.now());
 
         boardList.add(board);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.OK)  //200
                 // .body 는 json형태로 변환해서 반환시켜줌
                 .body("성공");
     }

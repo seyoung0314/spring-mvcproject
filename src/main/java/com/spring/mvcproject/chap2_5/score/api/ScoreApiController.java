@@ -1,15 +1,18 @@
 package com.spring.mvcproject.chap2_5.score.api;
 
+import com.spring.mvcproject.chap2_5.score.dto.response.ScoreDetailDto;
+import com.spring.mvcproject.chap2_5.score.dto.response.ScoreListDto;
 import com.spring.mvcproject.chap2_5.score.dto.request.ScoreCreateDto;
 import com.spring.mvcproject.chap2_5.score.entity.Score;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
 
 @RestController
 @RequestMapping("/api/v1/scores")
@@ -31,31 +34,66 @@ public class ScoreApiController {
 
     // 전체 성적조회 (정렬 파라미터를 읽어야 함)
     // /api/v1/scores?sort=name
+//    @GetMapping
+//    public List<Score> scoreList(
+//            @RequestParam(required = false, defaultValue = "") String sort
+//    ) {
+//
+//        List<Score> result = new ArrayList<>(scoreStore.values())
+//                .stream()
+//                .sorted(getScoreComparator(sort))
+//                .collect(Collectors.toList());
+//        return result;
+//    }
+
     @GetMapping
-    public List<Score> scoreList(
+    public ResponseEntity<List<ScoreListDto>> scoreList(
             @RequestParam(required = false, defaultValue = "") String sort
     ) {
 
-        List<Score> result = new ArrayList<>(scoreStore.values())
+//        ArrayList<ScoreListDto> responseList = new ArrayList<>();
+//
+//        ArrayList<Score> originalScores = new ArrayList<>(scoreStore.values());
+//        for (Score score : originalScores) {
+//            ScoreListDto dto = new ScoreListDto(score);
+//            responseList.add(dto);
+//        }
+
+        List<ScoreListDto> responseList = new ArrayList<>(scoreStore.values())
                 .stream()
-                .sorted(getScoreComparator(sort))
+                .map(score ->
+                        new ScoreListDto(score))
                 .collect(Collectors.toList());
-        return result;
+
+        calculatorRank(responseList);
+
+        responseList.sort(getScoreComparator(sort));
+
+        return ResponseEntity
+                .ok()
+                .body(responseList);
     }
 
-    private static Comparator<Score> getScoreComparator(String sort) {
-        Comparator<Score> comparing = Comparator.comparing(Score::getId);
+    private void calculatorRank(List<ScoreListDto> responseList) {
+        responseList.sort(comparing(ScoreListDto::getAverage).reversed());
+
+        for (ScoreListDto dto : responseList) {
+            dto.setRank(responseList.indexOf(dto) + 1);
+        }
+    }
+
+    private static Comparator<ScoreListDto> getScoreComparator(String sort) {
+        Comparator<ScoreListDto> comparing = comparing(ScoreListDto::getId);
 
         switch (sort) {
             case "id":
-                comparing = Comparator.comparing(Score::getId);
+                comparing = comparing(ScoreListDto::getId);
                 break;
             case "name":
-                comparing = Comparator.comparing(Score::getName);
+                comparing = comparing(ScoreListDto::getMaskingName);
                 break;
             case "average":
-                comparing = Comparator.comparingDouble((Score score) ->
-                        (double) (score.getEng() + score.getKor() + score.getMath()) / 3).reversed();
+                comparing = Comparator.comparingDouble(ScoreListDto::getAverage).reversed();
                 break;
             default:
                 break;
@@ -81,14 +119,41 @@ public class ScoreApiController {
 //        return "";
 //    }
 
-//http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
+    //성적 상세조회 요청
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findOne(@PathVariable Long id) {
+        Score score = scoreStore.get(id);
+        if (score == null) {
+            return ResponseEntity
+                    .status(404)
+                    .body("해당 정보를 찾을 수 없습니다.");
+        }
+        // 석차와 총 학생수를 구하기 위해 락생 목록을 가져옴
+        List<Score> scoreList = new ArrayList<>(scoreStore.values());
+
+        scoreList.sort(Comparator.comparing((Score s) -> s.getKor() + s.getEng() + s.getMath()).reversed());
+
+        ScoreDetailDto responseDto = new ScoreDetailDto(score, scoreList.size());
+
+        for (Score s : scoreList) {
+            if (s.getId().equals(responseDto.getId())) {
+                responseDto.setRank(scoreList.indexOf(s) + 1);
+            }
+        }
+
+        return ResponseEntity.ok()
+                .body(responseDto);
+    }
+
+
+    //http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
 // 학생 추가
     @PostMapping
     public ResponseEntity<?> addStudent(
             @RequestBody @Valid ScoreCreateDto dto
             , BindingResult bindingResult
-            ) {
-        if(bindingResult.hasErrors()){  //입력값 검증에서 에러가 발생했다면
+    ) {
+        if (bindingResult.hasErrors()) {  //입력값 검증에서 에러가 발생했다면
             System.out.println("=======================================");
 
             Map<String, String> errorMap = new HashMap<>();

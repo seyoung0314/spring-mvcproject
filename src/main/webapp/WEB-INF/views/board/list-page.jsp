@@ -4,52 +4,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>스프링 연습프로젝트 사이트</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Single+Day&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- reset -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css"
-    />
-
-    <!-- fontawesome css: https://fontawesome.com -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
-    />
-
-    <!-- https://linearicons.com/free#cdn -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css"
-    />
-
-    <!-- bootstrap css -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-
-    <link rel="stylesheet" href="/assets/css/main.css" />
-
-    <!-- bootstrap js -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-      defer
-    ></script>
-
-    <!-- side menu event js -->
-    <script src="/assets/js/side-menu.js" defer></script>
+    <%@ include file="include/static-file.jsp" %>
 
     <link rel="stylesheet" href="/assets/css/list.css" />
 
@@ -62,37 +18,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
   <body>
     <!-- header -->
-    <header>
-      <div class="inner-header">
-        <h1 class="logo">
-          <a href="/board/list">
-            <img src="/assets/img/logo.png" alt="로고이미지" />
-          </a>
-        </h1>
-
-        <div class="profile-box"></div>
-
-        <h2 class="intro-text">Welcome</h2>
-        <a href="#" class="menu-open">
-          <span class="menu-txt">MENU</span>
-          <span class="lnr lnr-menu"></span>
-        </a>
-      </div>
-
-      <nav class="gnb">
-        <a href="#" class="close">
-          <span class="lnr lnr-cross"></span>
-        </a>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="/board/list">Board</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a href="/members/sign-up">Sign Up</a></li>
-          <li><a href="/members/sign-in">Sign In</a></li>
-        </ul>
-      </nav>
-    </header>
+    <%@ include file="include/header.jsp" %>
 
     <div id="wrap">
       <div class="main-title-wrapper">
@@ -194,47 +120,64 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       const API_URL = "/api/v1/boards";
 
       async function getListData(item) {
-        let url = API_URL;
+        try {
+          let url = API_URL;
 
-        // 아이템(검색옵션)이 있으면 검색옵션 추가
-        if (item) {
-          url += `?searchOption=\${item.type}&keyword=\${item.keyword}`;
-          console.log(url);
-        }
-        const res = await fetch(url);
-        const data = await res.json();
+          // 아이템(검색옵션)이 있으면 검색옵션 추가
+          if (item) {
+            url += `?searchOption=\${item.type}&keyword=\${item.keyword}`;
+            console.log(url);
+          }
+          const res = await fetch(url);
+          const data = await res.json();
 
-        console.log(data);
+          console.log("========Get data");
 
-        if (res.status === 200) {
-          rendData(data);
-        } else {
-          alert("error");
+          console.log(data);
+
+          if (res.status === 200) {
+            rendData(data);
+          } else {
+            alert("error");
+          }
+        } catch (error) {
+          console.error("get호출 에러", error);
+          alert(error);
         }
       }
 
       async function delListItem(id) {
-        const res = await fetch(API_URL + "/" + id, {
-          method: "DELETE",
-        });
-        if (res.status === 200) {
-          getListData();
-        } else {
-          alert("error");
+        try {
+          const res = await fetch(API_URL + "/" + id, {
+            method: "DELETE",
+          });
+          if (res.status === 200) {
+            getListData();
+          } else {
+            alert("error");
+          }
+        } catch (error) {
+          console.error("delete호출 에러", error);
+          alert(error);
         }
       }
 
       async function countListItem(id) {
-        const res = await fetch(API_URL + "/" + id, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json", // JSON 데이터 전송
-          },
-        });
-        if (res.status === 200) {
-          getListData();
-        } else {
-          alert("error");
+        try {
+          const res = await fetch(API_URL + "/" + id, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json", // JSON 데이터 전송
+            },
+          });
+          if (res.status === 200) {
+            getListData();
+          } else {
+            alert("error");
+          }
+        } catch (error) {
+          console.error("put호출 에러", error);
+          alert(error);
         }
       }
 
@@ -247,30 +190,37 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           return;
         }
         data.forEach((element) => {
-          const now = element.regDateTime.split("T")[0];
+          // const now = element.regDateTime.split("T")[0];
+
+          let newArticle = "";
+          if(element.newArticle){
+            newArticle = "new ";
+          }
 
           $cardContainer.innerHTML += `
                   <div class="card-wrapper">
-                  <section class="card" data-bno="\${element.id}">
+                  <section class="card" data-bno="\${element.bno}">
                         <div class="card-title-wrapper">
-                          <h2 class="card-title">\${element.title}</h2>
+                          <h2 class="card-title">\${element.shortTitle}</h2>
                           <div class="time-view-wrapper">
                             <div class="time">
                               <i class="far fa-clock"></i>
-                              \${now}
+
+
+                              \${newArticle}\${element.date}
                             </div>
 
                             <div class="view">
                               <i class="fas fa-eye"></i>
-                              <span class="view-count">\${element.viewCount}</span>
+                              <span class="view-count">\${element.view}</span>
                             </div>
                           </div>
                         </div>
                         <div class="card-content">
-                          \${element.content}
+                          \${element.shortContent}
                         </div>
-                      </section>
-                                      <div class="card-btn-group">
+                      </section>      
+                      <div class="card-btn-group">
                         <button class="del-btn">
                           <i class="fas fa-times"></i>
                         </button>
@@ -284,13 +234,13 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       $cardContainer.addEventListener("click", (e) => {
         e.preventDefault();
 
-        if (e.target.matches(".card-container *")){
-
+        if (e.target.matches(".card-container *")) {
           const selectedItemId = e.target
-          .closest(".card-wrapper")
-          .querySelector(".card").dataset.bno;
-          
+            .closest(".card-wrapper")
+            .querySelector(".card").dataset.bno;
+
           countListItem(selectedItemId);
+          window.location.href = "/board/detail/" + selectedItemId;
         }
       });
 

@@ -5,58 +5,14 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>스프링 연습프로젝트 사이트</title>
+    
+    <%@ include file="include/static-file.jsp" %>
 
     <!-- 토스트 css -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
       rel="stylesheet"
     />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Single+Day&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- reset -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css"
-    />
-
-    <!-- fontawesome css: https://fontawesome.com -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
-    />
-
-    <!-- https://linearicons.com/free#cdn -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css"
-    />
-
-    <!-- bootstrap css -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-
-    <link rel="stylesheet" href="/assets/css/main.css" />
-
-    <!-- bootstrap js -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-      defer
-    ></script>
-
-    <!-- side menu event js -->
-    <script src="/assets/js/side-menu.js" defer></script>
 
     <!-- ck editor -->
     <link
@@ -152,45 +108,15 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       }
 
       .toast-top-center {
-  top: 50% !important; /* 수직으로 중앙 정렬 */
-  transform: translateY(-50%) !important; /* 정확한 중앙 위치 맞추기 */
-}
+        top: 50% !important; /* 수직으로 중앙 정렬 */
+        transform: translateY(-50%) !important; /* 정확한 중앙 위치 맞추기 */
+      }
     </style>
   </head>
 
   <body>
     <!-- header -->
-    <header>
-      <div class="inner-header">
-        <h1 class="logo">
-          <a href="/board/list">
-            <img src="/assets/img/logo.png" alt="로고이미지" />
-          </a>
-        </h1>
-
-        <div class="profile-box"></div>
-
-        <h2 class="intro-text">Welcome</h2>
-        <a href="#" class="menu-open">
-          <span class="menu-txt">MENU</span>
-          <span class="lnr lnr-menu"></span>
-        </a>
-      </div>
-
-      <nav class="gnb">
-        <a href="#" class="close">
-          <span class="lnr lnr-cross"></span>
-        </a>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="/board/list">Board</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a href="/members/sign-up">Sign Up</a></li>
-          <li><a href="/members/sign-in">Sign In</a></li>
-        </ul>
-      </nav>
-    </header>
+    <%@ include file="include/header.jsp" %>
 
     <div id="wrap" class="form-container">
       <h1>꾸러기 게시판 글쓰기</h1>
@@ -264,8 +190,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         const item = Object.fromEntries(formData.entries());
 
         // 게시판 라이브러리가 p태그 포함해서 줘서 제거하고 서버로 보냄
-        const content = formData.get("content").replace(/<[^>]*>/g, "");
-        item.content = content;
+        // (이거 스타일 적용때문에 그런거였음..)
+        // const content = formData.get("content").replace(/<[^>]*>/g, "");
+        // item.content = content;
 
         console.log("item");
         console.log(item);
@@ -274,23 +201,33 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       });
 
       async function postDataItem(item) {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(item),
-        });
-        if (res.status === 200) {
-          window.location.href = "/board/list";
-        } else if (res.status === 400) {
-          const error = await res.json();
-          
-          for (key in error) {
-            console.log("=========================");
-            console.log(key);
-            console.log(error[key]);
-            if(key !=="errorCount"){
-              toastShow(key, error[key], 3000);
-            }
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(item),
+          });
+          if (res.status === 200) {
+            window.location.href = "/board/list";
+          } else if (res.status === 400) {
+            errorMessase(res);
+          } else {
+            alert("error");
+          }
+        } catch (error) {
+          console.error("post호출 에러", error);
+          alert(error);
+        }
+      }
+
+      async function errorMessase(res) {
+        const error = await res.json();
+        for (key in error) {
+          console.log("=========================");
+          console.log(key);
+          console.log(error[key]);
+          if (key !== "errorCount") {
+            toastShow(key, error[key], 3000);
           }
         }
       }
