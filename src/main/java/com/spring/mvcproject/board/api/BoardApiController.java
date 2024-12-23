@@ -5,9 +5,12 @@ import com.spring.mvcproject.board.dto.request.BoardSaveDto;
 import com.spring.mvcproject.board.dto.response.BoardDetailDto;
 import com.spring.mvcproject.board.dto.response.BoardListDto;
 import com.spring.mvcproject.board.entity.Board;
+import com.spring.mvcproject.board.service.BoardService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -21,23 +24,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/boards")
 public class BoardApiController {
-    private List<Board> boardList = new ArrayList<>();
 
-    private Long idx = 1L;
+    BoardService boardService;
 
-    public BoardApiController() {
-
-        Board board1 = new Board(idx++,"제목1","내용1",1,LocalDateTime.now().minusYears(5));
-//        Board board2 = new Board(idx++,"제목2","내용1",1,now);
-//        Board board3 = new Board(idx++,"제목3","내용1",1,now);
-
-//        Board board1 = Board.of(idx++,"제목1","내용1");
-//        Board board2 = Board.of(idx++,"제목2","내용1");
-//        Board board3 = Board.of(idx++,"제목3","내용1");
-//
-        boardList.add(board1);
-//        boardList.add(board2);
-//        boardList.add(board3);
+    @Autowired
+    public BoardApiController(BoardService boardService) {
+        this.boardService = boardService;
     }
 
     // 목록조회 get
@@ -46,34 +38,8 @@ public class BoardApiController {
             @RequestParam(required = false, defaultValue = "") String searchOption,
             @RequestParam(required = false, defaultValue = "") String keyword
     ) {
-        Comparator<Board> comparing = Comparator.comparing(Board::getRegDateTime).reversed();
-        Predicate<Board> filterOption = null;
 
-        switch (searchOption) {
-            case "title":
-                filterOption = board -> board.getTitle().contains(keyword);
-                break;
-            case "content":
-                filterOption = board -> board.getContent().contains(keyword);
-                break;
-//            case "writer":
-//                filterOption = board -> board.getContent().contains(keyword);
-//                break;
-            case "tc":
-                filterOption = board -> board.getContent().contains(keyword);
-                break;
-            default:
-                filterOption = board -> true;
-        }
-
-        List<Board> filteredList = boardList.stream()
-                .filter(filterOption)
-                .sorted(comparing)
-                .collect(Collectors.toList());
-
-        List<BoardListDto> boardListDtos = filteredList.stream()
-                .map(board -> new BoardListDto(board))
-                .collect(Collectors.toList());
+        List<BoardListDto> boardListDtos = boardService.getList(searchOption, keyword);
 
         return ResponseEntity
                 .ok()
@@ -84,16 +50,8 @@ public class BoardApiController {
     @GetMapping("/{id}")
     public ResponseEntity<?> detailData(
             @PathVariable Long id
-    ){
-
-        Board targetBoard = new Board();
-        for (Board board : boardList) {
-            if(board.getId().equals(id)){
-                targetBoard = board;
-            }
-        }
-        BoardDetailDto responseDto = new BoardDetailDto(targetBoard);
-        System.out.println(responseDto);
+    ) {
+        BoardDetailDto responseDto = boardService.getDetail(id);
 
         return ResponseEntity
                 .ok()
@@ -103,20 +61,17 @@ public class BoardApiController {
 
     //삭제 del
     @DeleteMapping("/{id}")
-    public String deleteListData(
+    public ResponseEntity<?> deleteListData(
             @PathVariable Long id
     ) {
-
-        Board selectedItem = null;
-        for (Board board : boardList) {
-            if (board.getId().equals(id)) {
-                selectedItem = board;
-                break;
-            }
+        try {
+            boardService.deleteBoard(id);
+            return ResponseEntity.ok()
+                    .body("삭제되었습니다. id : " + id);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
         }
-        boardList.remove(selectedItem);
-
-        return id + " 삭제";
     }
 
     //등록 post
@@ -125,7 +80,7 @@ public class BoardApiController {
             @RequestBody @Valid BoardSaveDto dto
             , BindingResult bindingResult
     ) {
-//        String textOnly = board.getContent().replaceAll("<[^>]*>", "");
+        //        String textOnly = board.getContent().replaceAll("<[^>]*>", "");
         System.out.println("dto = " + dto);
 
         //입력값 검증 응답 처리 (aop위반 - 나중에 리팩토링할 예정)
@@ -154,38 +109,24 @@ public class BoardApiController {
             }
             System.out.println(errorCount + "개 실패");
 
-            return ResponseEntity
-                    .badRequest()    //400
-                    .body(errorMap);
+            return ResponseEntity.badRequest().body(errorMap);
         }
+        boardService.postBoard(dto);
 
-        Board board = dto.toEntity();
-        board.setId(idx++);
-
-        boardList.add(board);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)  //200
-                // .body 는 json형태로 변환해서 반환시켜줌
-                .body("성공");
-    }
+        return ResponseEntity.ok().body("등록성공");
+}
 
     //수정 (조회수)
     @PutMapping("/{id}")
-    public String putViewCount(
+    public ResponseEntity<?> putViewCount(
             @PathVariable Long id
     ) {
-        Board selectedItem = null;
-        for (Board board : boardList) {
-            if (board.getId().equals(id)) {
-                selectedItem = board;
-                selectedItem.setViewCount(selectedItem.getViewCount() + 1);
-                break;
-            }
+        try {
+            boardService.putBoard(id);
+            return ResponseEntity.ok().body("조회수 1증가");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-
-        return "조회수 1증가";
     }
 
 }

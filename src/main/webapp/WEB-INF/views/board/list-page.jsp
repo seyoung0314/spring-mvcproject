@@ -235,6 +235,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         e.preventDefault();
 
         if (e.target.matches(".card-container *")) {
+          if(e.target.closest(".del-btn")){
+            retrun;
+          }
           const selectedItemId = e.target
             .closest(".card-wrapper")
             .querySelector(".card").dataset.bno;
@@ -264,6 +267,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       $cardContainer.addEventListener("click", (e) => {
         // 삭제 버튼을 눌렀다면~
         if (e.target.matches(".card-btn-group *")) {
+          if(!e.target.closest(".del-btn")){
+            retrun;
+          }
           console.log("삭제버튼 클릭");
 
           const selectedItemId = e.target

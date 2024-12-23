@@ -101,7 +101,7 @@
           console.log(property);
           console.log(data[property]);
           const $target = document.getElementById(property);
-          if(!$target){
+          if($target){
             $target.textContent = data[property];
           }
         }

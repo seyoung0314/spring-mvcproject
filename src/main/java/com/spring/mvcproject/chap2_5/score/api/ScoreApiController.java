@@ -1,10 +1,12 @@
 package com.spring.mvcproject.chap2_5.score.api;
 
+import com.spring.mvcproject.chap2_5.score.Service.ScoreService;
 import com.spring.mvcproject.chap2_5.score.dto.response.ScoreDetailDto;
 import com.spring.mvcproject.chap2_5.score.dto.response.ScoreListDto;
 import com.spring.mvcproject.chap2_5.score.dto.request.ScoreCreateDto;
 import com.spring.mvcproject.chap2_5.score.entity.Score;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -17,20 +19,14 @@ import static java.util.Comparator.comparing;
 @RestController
 @RequestMapping("/api/v1/scores")
 public class ScoreApiController {
-    private Map<Long, Score> scoreStore = new HashMap<>();
 
-    private Long nextId = 1L;
+    // 컨트롤러는 서비스에게 의존
+    private ScoreService scoreService;
 
-    public ScoreApiController() {
-        Score s1 = new Score(nextId++, "철수", 100, 100, 100);
-        Score s2 = new Score(nextId++, "맹구", 55, 95, 15);
-        Score s3 = new Score(nextId++, "유리", 4, 100, 40);
-
-        scoreStore.put(s1.getId(), s1);
-        scoreStore.put(s2.getId(), s2);
-        scoreStore.put(s3.getId(), s3);
+    @Autowired
+    public ScoreApiController(ScoreService scoreService) {
+        this.scoreService = scoreService;
     }
-
 
     // 전체 성적조회 (정렬 파라미터를 읽어야 함)
     // /api/v1/scores?sort=name
@@ -59,47 +55,14 @@ public class ScoreApiController {
 //            responseList.add(dto);
 //        }
 
-        List<ScoreListDto> responseList = new ArrayList<>(scoreStore.values())
-                .stream()
-                .map(score ->
-                        new ScoreListDto(score))
-                .collect(Collectors.toList());
-
-        calculatorRank(responseList);
-
-        responseList.sort(getScoreComparator(sort));
+        // 서비스에게 비지니스 로직 처리 위임
+        List<ScoreListDto> responseList = scoreService.getList(sort);
 
         return ResponseEntity
                 .ok()
                 .body(responseList);
     }
 
-    private void calculatorRank(List<ScoreListDto> responseList) {
-        responseList.sort(comparing(ScoreListDto::getAverage).reversed());
-
-        for (ScoreListDto dto : responseList) {
-            dto.setRank(responseList.indexOf(dto) + 1);
-        }
-    }
-
-    private static Comparator<ScoreListDto> getScoreComparator(String sort) {
-        Comparator<ScoreListDto> comparing = comparing(ScoreListDto::getId);
-
-        switch (sort) {
-            case "id":
-                comparing = comparing(ScoreListDto::getId);
-                break;
-            case "name":
-                comparing = comparing(ScoreListDto::getMaskingName);
-                break;
-            case "average":
-                comparing = Comparator.comparingDouble(ScoreListDto::getAverage).reversed();
-                break;
-            default:
-                break;
-        }
-        return comparing;
-    }
 
 //    //http://localhost:9000/api/v1/scores?name=짱구&kor=10&eng=30&math=60
 //    // 학생 추가
@@ -122,27 +85,17 @@ public class ScoreApiController {
     //성적 상세조회 요청
     @GetMapping("/{id}")
     public ResponseEntity<?> findOne(@PathVariable Long id) {
-        Score score = scoreStore.get(id);
-        if (score == null) {
-            return ResponseEntity
-                    .status(404)
-                    .body("해당 정보를 찾을 수 없습니다.");
+
+        // 서비스에게 단일 조회 관련처리를 위임
+        try {
+            ScoreDetailDto responseDto = scoreService.getDetail(id);
+
+            return ResponseEntity.ok()
+                    .body(responseDto);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
         }
-        // 석차와 총 학생수를 구하기 위해 락생 목록을 가져옴
-        List<Score> scoreList = new ArrayList<>(scoreStore.values());
-
-        scoreList.sort(Comparator.comparing((Score s) -> s.getKor() + s.getEng() + s.getMath()).reversed());
-
-        ScoreDetailDto responseDto = new ScoreDetailDto(score, scoreList.size());
-
-        for (Score s : scoreList) {
-            if (s.getId().equals(responseDto.getId())) {
-                responseDto.setRank(scoreList.indexOf(s) + 1);
-            }
-        }
-
-        return ResponseEntity.ok()
-                .body(responseDto);
     }
 
 
@@ -161,18 +114,15 @@ public class ScoreApiController {
                 errorMap.put(err.getField(), err.getDefaultMessage());
             });
 
-
             return ResponseEntity
                     .badRequest()
                     .body(errorMap)
                     ;
-
         }
-        // ScoreCreateDto 를 Score로 변환하는 작업
-        Score score = dto.toEntity();
-        score.setId(nextId++);
 
-        scoreStore.put(score.getId(), score);
+        // 서비스에게 생성로직 처리 위임
+        Score score = scoreService.create(dto);
+
         return ResponseEntity
                 .ok()
                 .body("성적 정보 생성 완료! " + score);
@@ -181,11 +131,17 @@ public class ScoreApiController {
 
     //성정 정보 삭제요청 처리
     @DeleteMapping("/{id}")
-    public String deleteScore(
+    public ResponseEntity<?> deleteScore(
             @PathVariable Long id
     ) {
-        scoreStore.remove(id);
-        return id + "삭제 성공";
+        try {
+            scoreService.remove(id);
+            return ResponseEntity.ok()
+                    .body("성적 정보 삭제 성공! - id = "+id);
+        }catch (IllegalStateException e){
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
     }
 
 }
