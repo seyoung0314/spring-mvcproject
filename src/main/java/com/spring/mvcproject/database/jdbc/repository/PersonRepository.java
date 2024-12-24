@@ -3,10 +3,9 @@ package com.spring.mvcproject.database.jdbc.repository;
 import com.spring.mvcproject.database.jdbc.entity.Person;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 // 데이터베이스에 접근하는 객체
 @Repository
@@ -114,5 +113,44 @@ public class PersonRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //다중 SELECT - 목록조회
+    public List<Person> findAll(){
+        String sql = """
+                SELECT * FROM tbl_person
+                """;
+
+        List<Person> result = new ArrayList<>();
+
+        try {
+            // 1. db에 접속하고 접속 정보를 받아옴
+            Connection conn = DriverManager.getConnection(url, username, password);
+
+            // 2. sql을 실행할 수 있는 실행기 객체를 가져옴
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            // 3. ?값을 세팅
+
+            // 4. sql 실행 명령
+            //  4-a : 갱신(insert, update, delete) 명령 - executeUpdate()
+            //  4-b : 조회(select) 명령 - executeQuery()
+            ResultSet rs = pstmt.executeQuery();
+
+            // .next() : 포인터를 한 행씩 이동
+            while (rs.next()){
+                Long id = rs.getLong("id");
+                String personName = rs.getString("person_name");
+                int age = rs.getInt("age");
+
+                Person p = new Person(id,personName,age);
+
+                System.out.println("p = " + p);
+                result.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            return result;
     }
 }
