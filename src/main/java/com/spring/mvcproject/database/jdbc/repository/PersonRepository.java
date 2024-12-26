@@ -17,7 +17,7 @@ public class PersonRepository {
     private String url = "jdbc:mariadb://localhost:3306/practice";
 
     // 전용 드라이버 클래스
-    private String driverClassName= "org.mariadb.Driver";
+    private String driverClassName = "org.mariadb.Driver";
 
     // 데이터베이스 전용 드라이버 로딩
     public PersonRepository() {
@@ -31,7 +31,7 @@ public class PersonRepository {
     }
 
     // insert
-    public void save(Person person){
+    public void save(Person person) {
         String sql = """
                 INSERT INTO tbl_person
                     (id, person_name, age)
@@ -39,17 +39,18 @@ public class PersonRepository {
                     (?,?,?)
                 """;
 
+            Connection conn = null;
         try {
             // 1. db에 접속하고 접속 정보를 받아옴
-            Connection conn = DriverManager.getConnection(url, username, password);
+            conn = DriverManager.getConnection(url, username, password);
 
             // 2. sql을 실행할 수 있는 실행기 객체를 가져옴
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
             // 3. ?값을 세팅
-            pstmt.setLong(1,person.getId());
-            pstmt.setString(2,person.getPersonName());
-            pstmt.setInt(3,person.getAge());
+            pstmt.setLong(1, person.getId());
+            pstmt.setString(2, person.getPersonName());
+            pstmt.setInt(3, person.getAge());
 
             // 4. sql 실행 명령
             //  4-a : 갱신(insert, update, delete) 명령 - executeUpdate()
@@ -57,11 +58,21 @@ public class PersonRepository {
             pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            // 메모리 정리 : 연결 해제
+            //
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
+
+
     }
 
     //UPDATE
-    public void update(Person person){
+    public void update(Person person) {
         String sql = """
                 UPDATE tbl_person
                     SET person_name = ?, age =?
@@ -76,9 +87,9 @@ public class PersonRepository {
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
             // 3. ?값을 세팅
-            pstmt.setString(1,person.getPersonName());
-            pstmt.setInt(2,person.getAge());
-            pstmt.setLong(3,person.getId());
+            pstmt.setString(1, person.getPersonName());
+            pstmt.setInt(2, person.getAge());
+            pstmt.setLong(3, person.getId());
 
             // 4. sql 실행 명령
             //  4-a : 갱신(insert, update, delete) 명령 - executeUpdate()
@@ -90,7 +101,7 @@ public class PersonRepository {
     }
 
     //DELETE
-    public void delete(Long id){
+    public void delete(Long id) {
         String sql = """
                 DELETE FROM tbl_person
                     WHERE id =?
@@ -104,7 +115,7 @@ public class PersonRepository {
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
             // 3. ?값을 세팅
-            pstmt.setLong(1,id);
+            pstmt.setLong(1, id);
 
             // 4. sql 실행 명령
             //  4-a : 갱신(insert, update, delete) 명령 - executeUpdate()
@@ -116,7 +127,7 @@ public class PersonRepository {
     }
 
     //다중 SELECT - 목록조회
-    public List<Person> findAll(){
+    public List<Person> findAll() {
         String sql = """
                 SELECT * FROM tbl_person
                 """;
@@ -138,12 +149,12 @@ public class PersonRepository {
             ResultSet rs = pstmt.executeQuery();
 
             // .next() : 포인터를 한 행씩 이동
-            while (rs.next()){
+            while (rs.next()) {
                 Long id = rs.getLong("id");
                 String personName = rs.getString("person_name");
                 int age = rs.getInt("age");
 
-                Person p = new Person(id,personName,age);
+                Person p = new Person(id, personName, age);
 
                 System.out.println("p = " + p);
                 result.add(p);
@@ -151,6 +162,6 @@ public class PersonRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-            return result;
+        return result;
     }
 }
