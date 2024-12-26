@@ -1,8 +1,6 @@
 package com.spring.mvcproject.chap2_5.score.repository;
 
 import com.spring.mvcproject.chap2_5.score.entity.Score;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 // 역할 :  성적정보를 메모리에서 관리하는 역할
-@Repository
+//@Repository
 public class ScoreMemoryRepo implements ScoreRepository {
 
     private Map<Long, Score> scoreStore = new HashMap<>();

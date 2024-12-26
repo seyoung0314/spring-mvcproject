@@ -31,6 +31,9 @@ public class ScoreService {
 
         List<Score> scoreList = scoreRepository.findAll(sort);
 
+        System.out.println("-----------------------------------------");
+        System.out.println("scoreList = " + scoreList);
+
         // 원본 성적 리스트를 클라이언트가 우너하는 모양으로 변환(dto)
         List<ScoreListDto> responseData = scoreList.stream()
                 .map(score -> new ScoreListDto(score))
