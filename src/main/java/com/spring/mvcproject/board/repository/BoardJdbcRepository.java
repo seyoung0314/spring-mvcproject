@@ -2,6 +2,7 @@ package com.spring.mvcproject.board.repository;
 
 import com.spring.mvcproject.board.dto.request.BoardSaveDto;
 import com.spring.mvcproject.board.entity.Board;
+import com.spring.mvcproject.board.entity.PostStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +20,7 @@ public class BoardJdbcRepository implements BoardRepository {
     public List<Board> getBoardListAll() {
         return jdbcTemplate.query("""
                 SELECT * FROM tbl_board
+                WHERE status = 'ACTIVE'
                 """, new BeanPropertyRowMapper<>(Board.class));
     }
 
@@ -42,19 +44,21 @@ public class BoardJdbcRepository implements BoardRepository {
 
     @Override
     public boolean deleteBoard(Long id) {
+        System.out.println("-----------------delete--------");
         return jdbcTemplate.update("""
-                DELETE FROM tbl_board
+                UPDATE tbl_board
+                SET status = ?
                 WHERE id = ?
-                """, id) > 0;
+                """, PostStatus.DELETED.name(),id) > 0;
+        // enum은 enum상수 타입이라서 db에 보낼 때  string 타입으로 형변환
     }
 
     @Override
     public void viewCount(Long id) {
-        System.out.println("db주입");
         jdbcTemplate.update("""
                 UPDATE tbl_board
                 SET view_count = view_count + 1
                 WHERE id = ?
-                """,id);
+                """, id);
     }
 }

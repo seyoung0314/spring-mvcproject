@@ -42,7 +42,8 @@ public class BoardService {
 //                filterOption = board -> board.getContent().contains(keyword);
 //                break;
             case "tc":
-                filterOption = board -> board.getContent().contains(keyword);
+                filterOption = board ->board.getContent().contains(keyword)
+                                       || board.getTitle().contains(keyword);
                 break;
             default:
                 filterOption = board -> true;
