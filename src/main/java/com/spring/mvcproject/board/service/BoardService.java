@@ -89,6 +89,7 @@ public class BoardService {
     }
 
     public void putBoard(Long id) {
+        System.out.println("보드 서비스 조회수");
         boardRepository.viewCount(id);
     }
 }

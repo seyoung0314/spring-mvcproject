@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
+//@Repository
+// db 적용 안했을 때 사용했던 데이터리스트 (로컬)
 public class BoardMemoryRepository implements BoardRepository {
     private List<Board> boardList = new ArrayList<>();
 

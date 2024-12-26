@@ -122,6 +122,7 @@ public class BoardApiController {
             @PathVariable Long id
     ) {
         try {
+            System.out.println("조회수 증가 알고리즘 시작");
             boardService.putBoard(id);
             return ResponseEntity.ok().body("조회수 1증가");
         } catch (Exception e) {
