@@ -38,6 +38,11 @@ public class BoardMemoryRepository implements BoardRepository {
     }
 
     @Override
+    public List<Board> getBoardListAll(String sort, String keyword) {
+        return List.of();
+    }
+
+    @Override
     public Board getBoardOne(Long id) {
         for (Board board : boardList) {
             if (board.getId().equals(id)) {

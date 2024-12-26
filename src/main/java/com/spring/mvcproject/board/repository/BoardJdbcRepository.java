@@ -16,12 +16,51 @@ public class BoardJdbcRepository implements BoardRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+
     @Override
     public List<Board> getBoardListAll() {
+
         return jdbcTemplate.query("""
                 SELECT * FROM tbl_board
-                WHERE status = 'ACTIVE'
-                """, new BeanPropertyRowMapper<>(Board.class));
+                WHERE status = ?
+                """, new BeanPropertyRowMapper<>(Board.class),PostStatus.ACTIVE.name());
+    }
+
+    @Override
+    public List<Board> getBoardListAll(String sort, String keyword) {
+        StringBuilder query = new StringBuilder("""
+                SELECT * FROM tbl_board
+                WHERE status = ?
+                """);
+
+        switch (sort) {
+            case "title":
+                query.append("AND title LIKE '%")
+                        .append(keyword)
+                        .append("%'");
+
+                break;
+            case "content":
+                query.append("AND content LIKE '%")
+                        .append(keyword)
+                        .append("%'");
+
+                break;
+            case "tc":
+                query.append("AND (title LIKE '%")
+                        .append(keyword)
+                        .append("%' OR content LIKE '%")
+                        .append(keyword)
+                        .append("%')");
+                break;
+            default:
+                break;
+        }
+
+        System.out.println("-===========================================");
+        System.out.println("query"+ query);
+        return jdbcTemplate.query(query.toString(),
+                new BeanPropertyRowMapper<>(Board.class),PostStatus.ACTIVE.name());
     }
 
     @Override
@@ -49,7 +88,7 @@ public class BoardJdbcRepository implements BoardRepository {
                 UPDATE tbl_board
                 SET status = ?
                 WHERE id = ?
-                """, PostStatus.DELETED.name(),id) > 0;
+                """, PostStatus.DELETED.name(), id) > 0;
         // enum은 enum상수 타입이라서 db에 보낼 때  string 타입으로 형변환
     }
 
