@@ -10,6 +10,8 @@ public interface BoardRepository {
 
     List<Board> getBoardListAll();
 
+    List<Board> getBoardListAll(String sort, String keyword);
+
     Board getBoardOne(Long id);
 
     void postBoard(BoardSaveDto dto);

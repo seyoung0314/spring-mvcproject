@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
+//@Repository
+// db 적용 안했을 때 사용했던 데이터리스트 (로컬)
 public class BoardMemoryRepository implements BoardRepository {
     private List<Board> boardList = new ArrayList<>();
 
@@ -34,6 +35,11 @@ public class BoardMemoryRepository implements BoardRepository {
     @Override
     public List<Board> getBoardListAll() {
         return boardList;
+    }
+
+    @Override
+    public List<Board> getBoardListAll(String sort, String keyword) {
+        return List.of();
     }
 
     @Override

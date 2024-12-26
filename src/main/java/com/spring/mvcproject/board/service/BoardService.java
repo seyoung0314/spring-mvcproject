@@ -42,7 +42,8 @@ public class BoardService {
 //                filterOption = board -> board.getContent().contains(keyword);
 //                break;
             case "tc":
-                filterOption = board -> board.getContent().contains(keyword);
+                filterOption = board ->board.getContent().contains(keyword)
+                                       || board.getTitle().contains(keyword);
                 break;
             default:
                 filterOption = board -> true;
@@ -53,9 +54,14 @@ public class BoardService {
                 .sorted(comparing)
                 .collect(Collectors.toList());
 
-        List<BoardListDto> boardListDtos = filteredList.stream()
+        // DB에서 정렬해서 오는 메서드
+        List<Board> dbFilteredList =  boardRepository.getBoardListAll(searchOption,keyword);
+
+        List<BoardListDto> boardListDtos = dbFilteredList.stream()
                 .map(board -> new BoardListDto(board))
                 .collect(Collectors.toList());
+
+
 
         return boardListDtos;
     }
@@ -89,6 +95,7 @@ public class BoardService {
     }
 
     public void putBoard(Long id) {
+        System.out.println("보드 서비스 조회수");
         boardRepository.viewCount(id);
     }
 }
