@@ -25,10 +25,8 @@ public class PetApiController {
     @GetMapping
     public ResponseEntity<?> findAll() {
         PetListResponse list = petService.getList();
-
         return ResponseEntity.ok().body(list);
     }
-
 
     //개별조회
     @GetMapping("/{id}")
@@ -43,7 +41,7 @@ public class PetApiController {
     @PostMapping
     public ResponseEntity<?> create(
             @RequestBody Pet pet
-    ){
+    ) {
         boolean posted = petService.createPet(pet);
         return ResponseEntity.ok().body(posted);
     }
@@ -52,24 +50,24 @@ public class PetApiController {
     @PutMapping
     public ResponseEntity<?> update(
             Long id
-            ,@RequestBody Pet pet
-    ){
-        boolean updated = petService.updatePet(id,pet);
+            , @RequestBody Pet pet
+    ) {
+        boolean updated = petService.updatePet(id, pet);
         return ResponseEntity.ok().body(updated);
     }
 
     //삭제
     @PutMapping("/delete/{id}")
-    public ResponseEntity<?> update(
-            Long id
-    ){
+    public ResponseEntity<?> delete(
+            @PathVariable Long id
+    ) {
         boolean deleted = petService.deletePet(id);
         return ResponseEntity.ok().body(deleted);
     }
 
     //카운터
     @GetMapping("/count")
-    public ResponseEntity<?> update(){
+    public ResponseEntity<?> update() {
         int countPet = petService.countPet();
         return ResponseEntity.ok().body(countPet);
     }
