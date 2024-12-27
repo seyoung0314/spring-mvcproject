@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace: 연동할 인터페이스의 풀네임-->
+<mapper namespace="com.spring.mvcproject.database.mybatis.repository.PetRepository">
+    <!-- id: 추상메서드 이름 -->
+    <insert id="save">
+        INSERT INTO tbl_pet
+        (pet_name, pet_age, injection)
+        VALUES
+        (#{petName}, #{petAge}, #{injection})
+    </insert>
+
+
+    <!-- 만약에 mapper필드랑 파라미터의 이름이 같으면 파라미터가 우선-->
+    <select id="findById" resultType="Pet">
+        SELECT * FROM tbl_pet
+        WHERE status = 'ACTIVE'
+        AND id = #{id}
+    </select>
+
+    <!--여러줄의 데이터가 있을 경우에 자동으로 list로 변환함-->
+    <select id="findAll" resultType="Pet">
+        SELECT * FROM tbl_pet
+        WHERE status = 'ACTIVE'
+    </select>
+
+    <update id="updatePet">
+        UPDATE tbl_pet
+        SET
+        pet_name = #{petName}
+        , petAge = #{petAge}
+        , injection = #{injection}
+        WHERE id = #{id}
+    </update>
+
+    <update id="deleteById">
+        UPDATE tbl_pet
+        SET
+        status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <select id="petCount" resultType="int">
+        SELECT COUNT(*)
+        FROM tbl_pet
+        WHERE status = 'ACTIVE'
+    </select>
+</mapper>
