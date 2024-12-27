@@ -22,10 +22,10 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
 
 # MyBatis 설정
-  mybatis:
+mybatis:
 #    sql file location
 #    classpath : src/resources
-    mapper-locations: classpath:mapper/**/*.xml
-    type-aliases-package: com.spring.mvcproject
-    configuration:
-      map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.spring.mvcproject.database.mybatis
+  configuration:
+    map-underscore-to-camel-case: true
