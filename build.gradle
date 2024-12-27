@@ -45,6 +45,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	// 마리아디비 커넥터 - 사용할 db전용
 	implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.8'
+
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 }
 
 tasks.named('test') {
