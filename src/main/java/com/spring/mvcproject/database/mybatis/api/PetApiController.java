@@ -2,10 +2,13 @@ package com.spring.mvcproject.database.mybatis.api;
 
 
 import com.spring.mvcproject.board.entity.PostStatus;
+import com.spring.mvcproject.database.mybatis.dto.request.PetSaveRequest;
+import com.spring.mvcproject.database.mybatis.dto.response.PetDetailResponse;
 import com.spring.mvcproject.database.mybatis.dto.response.PetListResponse;
 import com.spring.mvcproject.database.mybatis.dto.response.PetResponse;
 import com.spring.mvcproject.database.mybatis.entity.Pet;
 import com.spring.mvcproject.database.mybatis.service.PetService;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,14 +36,14 @@ public class PetApiController {
     public ResponseEntity<?> fineOne(
             @PathVariable Long id
     ) {
-        Pet pet = petService.getPet(id);
+        PetDetailResponse pet = petService.getPet(id);
 
         return ResponseEntity.ok().body(pet);
     }
     //추가
     @PostMapping
     public ResponseEntity<?> create(
-            @RequestBody Pet pet
+            @RequestBody @Valid PetSaveRequest pet
     ) {
         boolean posted = petService.createPet(pet);
         return ResponseEntity.ok().body(posted);

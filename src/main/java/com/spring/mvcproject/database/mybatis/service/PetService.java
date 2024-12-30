@@ -2,6 +2,8 @@ package com.spring.mvcproject.database.mybatis.service;
 
 
 import com.spring.mvcproject.board.entity.PostStatus;
+import com.spring.mvcproject.database.mybatis.dto.request.PetSaveRequest;
+import com.spring.mvcproject.database.mybatis.dto.response.PetDetailResponse;
 import com.spring.mvcproject.database.mybatis.dto.response.PetListResponse;
 import com.spring.mvcproject.database.mybatis.dto.response.PetResponse;
 import com.spring.mvcproject.database.mybatis.entity.Pet;
@@ -42,14 +44,15 @@ public class PetService {
     }
 
     //개별조회
-    public Pet getPet(Long id) {
+    public PetDetailResponse getPet(Long id) {
         Pet pet = petRepository.findById(id);
-        return pet;
+
+        return PetDetailResponse.from(pet);
     }
 
     //추가
-    public boolean createPet(Pet pet) {
-        boolean savedPet = petRepository.save(pet);
+    public boolean createPet(PetSaveRequest pet) {
+        boolean savedPet = petRepository.save(pet.toEntity());
         return savedPet;
     }
 
