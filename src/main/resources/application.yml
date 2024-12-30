@@ -3,12 +3,20 @@ server:
 
 logging:
   level:
-    root: info
+    root: info   #spring all log
+    com.spring.mvcproject: debug
 
 #logging.level.org.springframework.web.servlet.DispatcherServlet=DEBUG
 
 #jsp 설정
 spring:
+
+  #file upload setting
+  servlet:
+    multipart:
+      max-file-size: 10MB   #업로드 파일 1개 최대용량 (대문자로 써야함)
+      max-request-size: 100MB   #한번에 업로드랗 수 있는 파일의 총 용량 (대문자로 써야함)
+
   mvc:
     view:
       prefix: /WEB-INF/views/
@@ -29,3 +37,9 @@ mybatis:
   type-aliases-package: com.spring.mvcproject.database.mybatis
   configuration:
     map-underscore-to-camel-case: true
+
+#  custom setting - file
+#  사용자가 올린 파일의 저장 경로
+file:
+  upload:
+    location: ${user.home}/spring/upload/
