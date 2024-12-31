@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v8")
@@ -32,7 +33,7 @@ public class FileUploadController {
         log.info("uploaded file type : {}", file.getContentType());
 
         //저장 파일 경로 생성
-        String fileName = file.getOriginalFilename();
+        String fileName = UUID.randomUUID() + file.getOriginalFilename();
         String filePath = fileUploadConfig.getLocation();
         File uploadedFile = new File(filePath + fileName);
 
@@ -56,8 +57,11 @@ public class FileUploadController {
             System.out.println("====================================");
             log.info("uploaded file name : {}", file.getOriginalFilename());
             log.info("uploaded file type : {}", file.getContentType());
+
             //저장 파일 경로 생성
-            String fileName = file.getOriginalFilename();
+            // UUID.randomUUIN() : xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+            // 32개 16진수 + 4개 하이픈 = 36자리
+            String fileName = UUID.randomUUID() + file.getOriginalFilename();
             String filePath = fileUploadConfig.getLocation();
             File uploadedFile = new File(filePath + fileName);
 
