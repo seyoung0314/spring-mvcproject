@@ -5,16 +5,14 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
-@ToString
+@Getter
 @Builder
+// 에러 발생 시 클라이언트에게 전송할 구체적인 데이터(json)
 public class ErrorResponse {
-    private LocalDateTime timestamp;
-    private int status; // 에러 상태코드
-    private String error;   // 에러이름
-    private String message; // 에러의 구체적인 원인 메세지
-    private String path;
+
+    private final LocalDateTime timestamp;  //발생시간
+    private final int status;   //상태코드
+    private final String error; //에러 이름
+    private final String message;   //원인 메세지
+    private final String path;  //발생경로
 }

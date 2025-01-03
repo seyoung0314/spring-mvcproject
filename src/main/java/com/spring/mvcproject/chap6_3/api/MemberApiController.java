@@ -2,6 +2,7 @@ package com.spring.mvcproject.chap6_3.api;
 
 import com.spring.mvcproject.chap6_3.dto.request.MemberCreateRequest;
 import com.spring.mvcproject.chap6_3.entity.Member;
+import com.spring.mvcproject.chap6_3.exception.ErrorCode;
 import com.spring.mvcproject.chap6_3.exception.dto.MemberException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +51,10 @@ public class MemberApiController {
         Member member = memberStore.get(account);
 
         if (account.length() > 10) {
-            throw new MemberException("10ㅡㅡ", HttpStatus.BAD_REQUEST);
+            throw new MemberException(ErrorCode.TEST_ERROR,"10자 이하");
         }
         if (account.equals("admin")) {
-            throw new MemberException("10ㅡㅡ", HttpStatus.NOT_FOUND);
+            throw new MemberException(ErrorCode.TEST_ERROR,"admin으로 작성");
         }
         if (member == null) {
             return ResponseEntity
